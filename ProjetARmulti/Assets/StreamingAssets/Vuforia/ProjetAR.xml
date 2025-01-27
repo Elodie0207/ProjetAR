@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+  <Tracking>
+    <ImageTarget name="HarryPotter" size="500.000000 715.000000" />
+    <ImageTarget name="Abstrait" size="500.000000 705.329163" />
+    <ImageTarget name="Joker" size="500.000000 813.075500" />
+    <ImageTarget name="Spiderman" size="500.000000 705.329163" />
+    <ImageTarget name="Mascara" size="500.000000 500.000000" />
+    <ImageTarget name="PopArt_femme" size="500.000000 625.000000" />
+    <ImageTarget name="donut" size="500.000000 500.000000" />
+    <ImageTarget name="Mew" size="500.000000 698.198181" />
+    <ImageTarget name="Reine" size="500.000000 693.877563" />
+    <ImageTarget name="ROI" size="500.000000 698.757751" />
+  </Tracking>
+</QCARConfig>
