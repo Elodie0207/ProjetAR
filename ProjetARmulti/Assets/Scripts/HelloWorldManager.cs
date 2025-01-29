@@ -6,6 +6,7 @@ namespace HelloWorld
     public class HelloWorldManager : MonoBehaviour
     {
         private static NetworkManager m_NetworkManager;
+        private bool showRoleSelection = false;
 
         void Awake()
         {
@@ -23,10 +24,48 @@ namespace HelloWorld
             {
                 StatusLabels();
 
-                SubmitNewPosition();
+                // Afficher la sélection de rôle si connecté et rôle non sélectionné
+                var playerObject = m_NetworkManager.SpawnManager.GetLocalPlayerObject();
+                if (playerObject != null)
+                {
+                    var player = playerObject.GetComponent<HelloWorldPlayer>();
+                    if (player.Role.Value == PlayerRole.None)
+                    {
+                        DrawRoleSelection();
+                    }
+                    else
+                    {
+                        SubmitNewPosition();
+                    }
+                }
             }
 
             GUILayout.EndArea();
+        }
+
+        void DrawRoleSelection()
+        {
+            GUILayout.Label("Choisissez votre rôle :");
+            
+            if (GUILayout.Button("Specialiste"))
+            {
+                SelectRole(PlayerRole.Specialiste);
+            }
+            
+            if (GUILayout.Button("Technicien"))
+            {
+                SelectRole(PlayerRole.Technicien);
+            }
+        }
+
+        void SelectRole(PlayerRole role)
+        {
+            var playerObject = m_NetworkManager.SpawnManager.GetLocalPlayerObject();
+            if (playerObject != null)
+            {
+                var player = playerObject.GetComponent<HelloWorldPlayer>();
+                player.SetRoleServerRpc(role);
+            }
         }
 
         static void StartButtons()
