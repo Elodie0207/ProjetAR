@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="" />
+    <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -79,6 +87,7 @@
       <updated>1738101895405</updated>
       <workItem from="1738101898784" duration="577000" />
       <workItem from="1738269266896" duration="3000" />
+      <workItem from="1738318090726" duration="1023000" />
     </task>
     <servers />
   </component>
