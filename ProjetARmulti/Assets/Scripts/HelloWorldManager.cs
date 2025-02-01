@@ -11,6 +11,7 @@ namespace HelloWorld
         void Awake()
         {
             m_NetworkManager = GetComponent<NetworkManager>();
+            Time.timeScale = 0; // Stopper le temps tant qu'on n'est pas connecté
         }
 
         void OnGUI()
@@ -22,6 +23,7 @@ namespace HelloWorld
             }
             else
             {
+                Time.timeScale = 1; // Reprendre le temps quand connecté
                 StatusLabels();
 
                 // Afficher la sélection de rôle si connecté et rôle non sélectionné
@@ -101,6 +103,25 @@ namespace HelloWorld
                     var player = playerObject.GetComponent<HelloWorldPlayer>();
                     player.Move();
                 }
+            }
+        }
+    }
+
+    public class PlayerController : MonoBehaviour
+    {
+        void Start()
+        {
+            if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
+            {
+                enabled = false; // Désactiver les contrôles tant qu'on n'est pas connecté
+            }
+        }
+
+        void Update()
+        {
+            if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer)
+            {
+                enabled = true; // Activer les contrôles après connexion
             }
         }
     }
