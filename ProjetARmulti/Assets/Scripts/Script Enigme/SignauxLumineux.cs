@@ -4,153 +4,153 @@ using UnityEngine;
 
 public class SignauxLumineux : MonoBehaviour
 {
-    // Liste de tous les boutons de la scène
-    private Renderer[] buttonRenderers;
-    private Material[] buttonMaterials;  // Matériaux des boutons
+    private static List<Color> lightSequence = new List<Color>();
+    private static List<Color> playerSequence = new List<Color>();
+    private static bool isShowingSequence = false;
+    private static bool gameStarted = false;
+    private static bool gameOver = false;
 
-    // Liste pour stocker la séquence des boutons allumés
-    private List<int> lightSequence = new List<int>();
-    private int sequenceIndex = 0;
+    private Renderer buttonRenderer;
+    private Color originalColor;
+    private static readonly int maxSequenceLength = 4;
 
-    // Variable pour indiquer si le jeu est en train de montrer la séquence ou si l'utilisateur peut cliquer
-    private bool isShowingSequence = true;
-
-    // Start is called before the first frame update
     void Start()
     {
-        // Trouver tous les objets avec un Renderer dans la scène qui sont des boutons
-        buttonRenderers = FindObjectsOfType<Renderer>();
-        buttonMaterials = new Material[buttonRenderers.Length];
-
-        // Sauvegarder tous les matériaux originaux
-        for (int i = 0; i < buttonRenderers.Length; i++)
-        {
-            buttonMaterials[i] = buttonRenderers[i].material;
-            // Désactiver l'émission au départ
-            buttonRenderers[i].material.SetColor("_EmissionColor", Color.black);
-        }
-
-        // Démarrer une nouvelle séquence aléatoire
-        GenerateRandomSequence();
-        StartCoroutine(ShowSequence());
+        buttonRenderer = GetComponent<Renderer>();
+        originalColor = buttonRenderer.material.color;
     }
 
-    // Générer une séquence de boutons allumés de manière aléatoire
     void GenerateRandomSequence()
     {
         lightSequence.Clear();
-        int sequenceLength = 5; // La longueur de la séquence peut être ajustée
+        playerSequence.Clear();
+        int sequenceLength = Random.Range(1, maxSequenceLength + 1);
+        
+        SignauxLumineux[] allButtons = FindObjectsOfType<SignauxLumineux>();
+        List<Color> availableColors = new List<Color>();
+
+        foreach (var button in allButtons)
+        {
+            if (button.gameObject.name != "Start")
+            {
+                availableColors.Add(button.GetComponent<Renderer>().material.color);
+            }
+        }
 
         for (int i = 0; i < sequenceLength; i++)
         {
-            int randomIndex = Random.Range(0, buttonRenderers.Length); // Choisit un bouton au hasard
-            lightSequence.Add(randomIndex);
+            int randomIndex = Random.Range(0, availableColors.Count);
+            lightSequence.Add(availableColors[randomIndex]);
+        }
+        
+        Debug.Log($"Nouvelle séquence générée : {sequenceLength} couleurs");
+    }
+
+    void OnMouseDown()
+    {
+        if (gameObject.name == "Start")
+        {
+            if (!isShowingSequence && !gameStarted)
+            {
+                Debug.Log("Start cliqué - Nouvelle partie !");
+                gameStarted = true;
+                gameOver = false;
+                GenerateRandomSequence();
+                StartCoroutine(ShowSequence());
+            }
+            return;
+        }
+
+        if (isShowingSequence || !gameStarted || gameOver) return;
+
+        Color clickedColor = buttonRenderer.material.color;
+        Debug.Log($"Bouton cliqué : {clickedColor}");
+
+        StartCoroutine(FlashButton());
+
+        playerSequence.Add(clickedColor);
+
+        CheckSequence();
+    }
+
+    void CheckSequence()
+    {
+        int index = playerSequence.Count - 1;
+
+        if (playerSequence[index] != lightSequence[index])
+        {
+            Debug.Log("Erreur - Partie perdue !");
+            GameOver(false);
+            return;
+        }
+
+        if (playerSequence.Count == lightSequence.Count)
+        {
+            Debug.Log("Séquence réussie !");
+            GameOver(true);
         }
     }
 
-    // Afficher la séquence de manière visuelle (avec un délai entre chaque bouton)
-    IEnumerator ShowSequence()
+    void GameOver(bool win)
     {
-        // Nous affichons la séquence un par un
-        foreach (int index in lightSequence)
+        gameOver = true;
+        gameStarted = false;
+
+        if (win)
         {
-            // Éteindre tous les boutons avant d'allumer le suivant
-            foreach (var buttonRenderer in buttonRenderers)
-            {
-                buttonRenderer.material.SetColor("_EmissionColor", Color.black); // Désactive l'émission des autres boutons
-            }
-
-            Material clickedMaterial = buttonMaterials[index];
-            Color buttonColor = clickedMaterial.color;
-
-            // Applique l'émission pour le bouton
-            clickedMaterial.SetColor("_EmissionColor", buttonColor * 2f); // Intensité de l'émission
-
-            clickedMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-
-            // Attendre un moment avant d'éteindre l'émission et passer au suivant
-            yield return new WaitForSeconds(0.5f); 
-
-            // Éteindre l'émission après le délai
-            clickedMaterial.SetColor("_EmissionColor", Color.black);
-        }
-
-        // Une fois la séquence affichée, l'utilisateur peut maintenant commencer à cliquer
-        Debug.Log("Cliquez sur les boutons dans le bon ordre !");
-        isShowingSequence = false; // Permet à l'utilisateur de cliquer
-    }
-
-    // Cette fonction sera appelée quand l'utilisateur clique sur un bouton
-    public void OnMouseDown()
-    {
-        if (isShowingSequence) return; // Ignore les clics pendant l'affichage de la séquence
-
-        // Affiche le nom de l'objet cliqué dans la console
-        Debug.Log(gameObject.name + " cliqué !");
-
-        Renderer clickedButtonRenderer = GetComponent<Renderer>();
-        int clickedIndex = System.Array.IndexOf(buttonRenderers, clickedButtonRenderer);
-
-        // Vérifier si l'utilisateur a cliqué sur le bon bouton
-        if (clickedIndex == lightSequence[sequenceIndex])
-        {
-            // Si le bouton cliqué est correct, augmente l'index de la séquence
-            sequenceIndex++;
-            
-            // Vérifie si toute la séquence a été réussie
-            if (sequenceIndex >= lightSequence.Count)
-            {
-                Debug.Log("gg! Vous avez réussi !");
-                sequenceIndex = 0; // Réinitialiser la séquence pour recommencer
-                GenerateRandomSequence(); // Générer une nouvelle séquence
-                StartCoroutine(ShowSequence()); // Afficher la nouvelle séquence
-            }
+            Debug.Log("Vous avez gagné ! Le jeu est terminé.");
+            DisableStartButton();
         }
         else
         {
-            // Si l'utilisateur se trompe
-            Debug.Log("Perdu! Essayez encore.");
-            sequenceIndex = 0; // Réinitialiser la séquence
-            GenerateRandomSequence(); // Générer une nouvelle séquence
-            StartCoroutine(ShowSequence()); // Afficher la nouvelle séquence
+            Debug.Log("Vous avez perdu. Cliquez sur Start pour recommencer.");
         }
+    }
 
-        // Applique l'effet lumineux sur l'objet cliqué
-        if (clickedButtonRenderer != null)
+    void DisableStartButton()
+    {
+        SignauxLumineux[] allButtons = FindObjectsOfType<SignauxLumineux>();
+        foreach (var button in allButtons)
         {
-            Material clickedMaterial = clickedButtonRenderer.material;
-            Color buttonColor = clickedMaterial.color;
-
-            // Vérifie si la couleur est bordeaux (une couleur avec beaucoup de rouge et une faible composante verte/bleue)
-            if (buttonColor.r > 0.5f && buttonColor.g < 0.2f && buttonColor.b < 0.2f)
+            if (button.gameObject.name == "Start")
             {
-                clickedMaterial.SetColor("_EmissionColor", buttonColor * 5f); // Intensité d'émission plus forte pour le bordeaux
-            }
-            else
-            {
-                clickedMaterial.SetColor("_EmissionColor", buttonColor * 2f);
-            }
-
-            clickedMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-        }
-
-        // Si tu veux éteindre l'émission des autres boutons (si un seul bouton doit briller à la fois)
-        foreach (Renderer buttonRenderer in buttonRenderers)
-        {
-            if (buttonRenderer != clickedButtonRenderer)
-            {
-                buttonRenderer.material.SetColor("_EmissionColor", Color.black); // Désactive l'émission des autres
+                button.GetComponent<Collider>().enabled = false;
+                break;
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator ShowSequence()
     {
-        // Optionnel : rendre l'émission plus visible sous des éclairages spécifiques
-        foreach (Renderer buttonRenderer in buttonRenderers)
+        isShowingSequence = true;
+        playerSequence.Clear();
+        yield return new WaitForSeconds(0.5f);
+
+        SignauxLumineux[] allButtons = FindObjectsOfType<SignauxLumineux>();
+
+        foreach (Color sequenceColor in lightSequence)
         {
-            buttonRenderer.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            foreach (var button in allButtons)
+            {
+                if (button.gameObject.name != "Start" && 
+                    button.GetComponent<Renderer>().material.color == sequenceColor)
+                {
+                    yield return StartCoroutine(button.FlashButton());
+                    break;
+                }
+            }
+            yield return new WaitForSeconds(0.3f);
         }
+
+        isShowingSequence = false;
+        Debug.Log("Reproduisez la séquence !");
+    }
+
+    IEnumerator FlashButton()
+    {
+        Color startColor = buttonRenderer.material.color;
+        buttonRenderer.material.color = Color.white;
+        yield return new WaitForSeconds(0.3f);
+        buttonRenderer.material.color = startColor;
     }
 }
