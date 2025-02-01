@@ -1,0 +1,201 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8224386442134721906
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1799011852904702064}
+  - component: {fileID: 4810630228252399259}
+  - component: {fileID: 5662491566971454998}
+  - component: {fileID: 7798401496599508613}
+  m_Layer: 0
+  m_Name: Molette
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1799011852904702064
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8224386442134721906}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 920, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7845660375959872718}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4810630228252399259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8224386442134721906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1631628248, guid: 8a9a760f95896c34689febc965510927, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PreviewVisible: 1
+  RuntimeOcclusion: 0
+  RuntimeCollider: 0
+  mTrackableName: Joker
+  mInitializedInEditor: 1
+  mDataSetPath: Vuforia/ProjetAR.xml
+  mAspectRatio: 1.626151
+  mImageTargetType: 0
+  mWidth: 500
+  mHeight: 813.0755
+  mRuntimeTexture: {fileID: 0}
+  mMotionHint: 1
+  mTrackingOptimization: 0
+  mTrackingOptimizationNeedsUpgrade: 0
+  mPreview: {fileID: 7798401496599508613}
+--- !u!114 &5662491566971454998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8224386442134721906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 886328de6a5c14cbb85854fdf1a5085b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StatusFilter: 1
+  UsePoseSmoothing: 0
+  AnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 3.3333333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.3
+      value: 1
+      inSlope: 3.3333333
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  OnTargetFound:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTargetLost:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &7798401496599508613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8224386442134721906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1778676317, guid: 8a9a760f95896c34689febc965510927, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mObserverBehaviour: {fileID: 4810630228252399259}
+  mHiddenRoot: {fileID: 0}
+  mTargetName: Joker
+  mDatasetName: Vuforia/ProjetAR.xml
+  mCastedBehaviour: {fileID: 4810630228252399259}
+  mMeshFilter: {fileID: 0}
+  mMeshRenderer: {fileID: 0}
+--- !u!1001 &553529588522622083
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1799011852904702064}
+    m_Modifications:
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: -16198.512
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: -16210.303
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: -1809.7487
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -24.701
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 19.048
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 17.986
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5105732
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.48801133
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.49747372
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5036665
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599165688174079807, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+      propertyPath: m_Name
+      value: Molette
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+--- !u!4 &7845660375959872718 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7732657132658309197, guid: 6c1d41797ea8552428d29db9afffd53b, type: 3}
+  m_PrefabInstance: {fileID: 553529588522622083}
+  m_PrefabAsset: {fileID: 0}
