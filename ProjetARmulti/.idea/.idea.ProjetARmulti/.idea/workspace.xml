@@ -4,6 +4,8 @@
     <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Resources/VuforiaConfiguration.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/VuforiaConfiguration.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -11,6 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/NeedleVisibility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/RadioFrequencyControl.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -88,6 +91,7 @@
       <workItem from="1738269266896" duration="3000" />
       <workItem from="1738318090726" duration="1023000" />
       <workItem from="1738408479217" duration="4900000" />
+      <workItem from="1738446119333" duration="6227000" />
     </task>
     <servers />
   </component>
