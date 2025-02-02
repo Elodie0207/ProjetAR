@@ -7,7 +7,6 @@ public class SpecialistObjectInteraction : NetworkBehaviour
     // Materials for different roles
     [SerializeField] private Material specialistMaterial;
     [SerializeField] private Material technicianMaterial;
-    [SerializeField] private Material defaultMaterial;
 
     // Reference to the object's renderer
     private Renderer objectRenderer;
@@ -36,23 +35,23 @@ public class SpecialistObjectInteraction : NetworkBehaviour
         // Only update renderer if we have a renderer component
         if (objectRenderer == null) return;
 
-        // Set default material
-        objectRenderer.material = defaultMaterial ?? technicianMaterial;
+        // Set default to technician material
+        objectRenderer.material = technicianMaterial;
     }
 
     // Server-side method to set object interaction permission
     [ServerRpc(RequireOwnership = false)]
     public void SetInteractionPermissionServerRpc(PlayerRole requestingRole)
     {
-        // Only allow Specialist to interact with the object
-        if (requestingRole == PlayerRole.Specialiste)
+        // Invert the material logic
+        if (requestingRole == PlayerRole.Technicien)
         {
-            currentAllowedRole.Value = PlayerRole.Specialiste;
+            currentAllowedRole.Value = PlayerRole.Technicien;
             objectRenderer.material = specialistMaterial;
         }
         else
         {
-            currentAllowedRole.Value = PlayerRole.Technicien;
+            currentAllowedRole.Value = PlayerRole.Specialiste;
             objectRenderer.material = technicianMaterial;
         }
     }
@@ -85,11 +84,12 @@ public class SpecialistObjectInteraction : NetworkBehaviour
         }
 
         // Check if the player can interact
-        if (player.Role.Value == PlayerRole.Specialiste &&
-            currentAllowedRole.Value == PlayerRole.Specialiste)
+        // Inverting the interaction logic
+        if (player.Role.Value == PlayerRole.Technicien &&
+            currentAllowedRole.Value == PlayerRole.Technicien)
         {
             // Perform interaction logic here
-            Debug.Log("Specialist interacted with the object!");
+            Debug.Log("Technician interacted with the object!");
 
             // Example of potential interaction - you can expand this
             transform.position += Vector3.up * 0.5f; // Simple vertical movement
