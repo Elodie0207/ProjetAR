@@ -21,10 +21,10 @@ public class ButtonTimeControl : MonoBehaviour
     }
 
     // Fonction appelée quand on clique sur le bouton via OnMouseDown()
-     void OnMouseDown()
+    void OnMouseDown()
     {
-        Debug.Log("jejjee");
-        // Vérifie le nom du GameObject qui a été cliqué
+        if (object2 == null || !object2.activeSelf) return;
+        
         if (gameObject.name == "Haut")
         {
             IncreaseTime();  // Augmenter l'heure si c'est le bouton "Haut"
@@ -38,9 +38,10 @@ public class ButtonTimeControl : MonoBehaviour
     // Fonction pour augmenter l'heure
     private void IncreaseTime()
     {
-        timeInMinutes += 5f;  // Incrémenter de 5 minutes
-        if (timeInMinutes > 720f) // Limiter l'heure à 12:00 (720 minutes)
-            timeInMinutes = 720f;
+        if (object2 == null || !object2.activeSelf) return; // Vérifie si object2 est actif avant de modifier le temps
+
+        timeInMinutes += 5f;
+        timeInMinutes = Mathf.Clamp(timeInMinutes, 0f, 720f);
 
         UpdateTimeDisplay();
         CheckTime();
@@ -49,9 +50,10 @@ public class ButtonTimeControl : MonoBehaviour
     // Fonction pour diminuer l'heure
     private void DecreaseTime()
     {
-        timeInMinutes -= 5f;  // Diminuer de 5 minutes
-        if (timeInMinutes < 0f) // Limiter l'heure à 00:00
-            timeInMinutes = 0f;
+        if (object2 == null || !object2.activeSelf) return; // Vérifie si object2 est actif avant de modifier le temps
+
+        timeInMinutes -= 5f;
+        timeInMinutes = Mathf.Clamp(timeInMinutes, 0f, 720f);
 
         UpdateTimeDisplay();
         CheckTime();
@@ -66,18 +68,18 @@ public class ButtonTimeControl : MonoBehaviour
         timeDisplay.text = string.Format("{0:D2}:{1:D2}", hours, minutes);
     }
 
-    // Vérifie si l'heure est correcte (12:30)
+    // Vérifie si l'heure est correcte (06:00)
     private void CheckTime()
     {
-        // Si l'heure atteint 12:30 (750 minutes), faire les changements d'activation
-        if (timeInMinutes == 750f) // 12:30 = 12 * 60 + 30 = 750 minutes
+        if (timeInMinutes == 360f) // 06:00 = 6 * 60 = 360 minutes
         {
             if (object2 != null)
                 object2.SetActive(false);  // Désactiver l'objet2 (grande aiguille)
 
             if (object3 != null)
                 object3.SetActive(true);  // Activer l'objet3
-            Debug.Log("Heure correcte (12:30) atteinte, activation de l'objet3 !");
+            
+            Debug.Log("Heure correcte (06:00) atteinte, activation de l'objet3 !");
         }
     }
 }
