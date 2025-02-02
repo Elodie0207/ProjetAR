@@ -92,6 +92,8 @@ public class NetworkManagerRelay : MonoBehaviour
             JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
             var relayServerData = new RelayServerData(allocation, "dtls");
             transport.SetRelayServerData(relayServerData);
+            
+            connectionPanel.SetActive(false);
 
             networkManager.StartClient();
         }
