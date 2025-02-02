@@ -21,15 +21,13 @@ namespace HelloWorld
             {
                 Move();
             }
-            
-            // Créer et configurer le texte 3D
-            CreateRoleText();
-            
-            // S'abonner au changement de rôle
-            Role.OnValueChanged += OnRoleChanged;
-            
-            // Mettre à jour le texte initial
-            UpdateRoleText(Role.Value);
+
+            if (IsSpawned) // Vérification supplémentaire
+            {
+                CreateRoleText();
+                Role.OnValueChanged += OnRoleChanged;
+                UpdateRoleText(Role.Value);
+            }
         }
 
         private void CreateRoleText()
@@ -90,12 +88,19 @@ namespace HelloWorld
 
         void Update()
         {
-            transform.position = Position.Value;
-            
-            // Faire face à la caméra pour le texte
-            if (roleText != null)
+            if (IsSpawned) // Vérifier que le network est actif
             {
-                roleText.transform.forward = Camera.main.transform.forward;
+                // Vérifier que Position n'est pas null avant d'accéder à sa valeur
+                if (Position != null)
+                {
+                    transform.position = Position.Value;
+                }
+
+                // Vérifier que roleText n'est pas null avant d'essayer de le faire face à la caméra
+                if (roleText != null && Camera.main != null)
+                {
+                    roleText.transform.forward = Camera.main.transform.forward;
+                }
             }
         }
     }
