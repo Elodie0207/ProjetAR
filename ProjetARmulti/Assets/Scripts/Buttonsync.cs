@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using HelloWorld;
+using System;
 
 public class ButtonSync : NetworkBehaviour
 {
@@ -72,7 +73,7 @@ public class ButtonSync : NetworkBehaviour
         if (player.Role.Value != PlayerRole.Technicien) return;
 
         joueur1Appuye.Value = true;
-        tempsAppuiJoueur1.Value = NetworkManager.Singleton.ServerTime.Time;
+        tempsAppuiJoueur1.Value = Time.time;
         Debug.Log("Joueur 1 a appuyé ! En attente du Joueur 2...");
 
         VerifierSynchronisationClientRpc();
@@ -91,7 +92,7 @@ public class ButtonSync : NetworkBehaviour
         if (player.Role.Value != PlayerRole.Specialiste) return;
 
         joueur2Appuye.Value = true;
-        tempsAppuiJoueur2.Value = NetworkManager.Singleton.ServerTime.Time;
+        tempsAppuiJoueur2.Value = Time.time;
         Debug.Log("Joueur 2 a appuyé ! En attente du Joueur 1...");
 
         VerifierSynchronisationClientRpc();

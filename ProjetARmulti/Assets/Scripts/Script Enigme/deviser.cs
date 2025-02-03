@@ -5,47 +5,54 @@ using UnityEngine;
 public class deviser : MonoBehaviour
 {
     [System.Serializable]
-    public class VisConfig
+    public class ScrewConfig
     {
-        public string nom;
-        public BoxCollider zoneVissage;
-        public bool estDevissee = false;
+        public string name;
+        public BoxCollider screwZone;
+        public GameObject screwObject;
+        public bool isUnscrewed = false;
     }
 
-    [Header("Configuration des vis")]
-    public VisConfig visHautGauche = new VisConfig { nom = "Vis Haut Gauche" };
-    public VisConfig visHautDroite = new VisConfig { nom = "Vis Haut Droite" };
-    public VisConfig visBasGauche = new VisConfig { nom = "Vis Bas Gauche" };
-    public VisConfig visBasDroite = new VisConfig { nom = "Vis Bas Droite" };
+    [Header("Screw Configuration")]
+    public ScrewConfig topLeftScrew = new ScrewConfig { name = "Top Left Screw" };
+    public ScrewConfig topRightScrew = new ScrewConfig { name = "Top Right Screw" };
+    public ScrewConfig bottomLeftScrew = new ScrewConfig { name = "Bottom Left Screw" };
+    public ScrewConfig bottomRightScrew = new ScrewConfig { name = "Bottom Right Screw" };
 
-    [Header("Configuration Tournevis")]
-    public Transform pointTournevis;
+    [Header("Screwdriver")]
+    public Transform screwdriverPosition;
 
-    private int nombreVisDevissees = 0;
+    [Header("Plate")]
+    public GameObject plate;
+
+    private int unscrewedScrews = 0;
 
     private void Update()
     {
-        VerifierProximiteTournevis(visHautGauche);
-        VerifierProximiteTournevis(visHautDroite);
-        VerifierProximiteTournevis(visBasGauche);
-        VerifierProximiteTournevis(visBasDroite);
+        CheckScrewdriverProximity(topLeftScrew);
+        CheckScrewdriverProximity(topRightScrew);
+        CheckScrewdriverProximity(bottomLeftScrew);
+        CheckScrewdriverProximity(bottomRightScrew);
     }
 
-    private void VerifierProximiteTournevis(VisConfig vis)
+    private void CheckScrewdriverProximity(ScrewConfig screw)
     {
-        if (vis.estDevissee || vis.zoneVissage == null || pointTournevis == null)
+        if (screw.isUnscrewed || screw.screwZone == null || screwdriverPosition == null)
             return;
 
-        if (vis.zoneVissage.bounds.Contains(pointTournevis.position))
+        if (screw.screwZone.bounds.Contains(screwdriverPosition.position))
         {
-            vis.estDevissee = true;
-            nombreVisDevissees++;
-            Debug.Log(vis.nom + " dévissée !");
+            screw.isUnscrewed = true;
+            screw.screwObject.SetActive(false);
+            unscrewedScrews++;
+            Debug.Log(screw.name + " unscrewed!");
 
-            if (nombreVisDevissees >= 4)
+            if (unscrewedScrews >= 4)
             {
-                Debug.Log("Toutes les vis sont dévissées !");
+                Debug.Log("All screws unscrewed!");
+                plate.SetActive(false);
             }
         }
     }
+
 }
