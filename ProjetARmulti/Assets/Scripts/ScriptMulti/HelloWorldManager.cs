@@ -1,6 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
-
+/*
 namespace HelloWorld
 {
     public class HelloWorldManager : MonoBehaviour
@@ -19,29 +19,18 @@ namespace HelloWorld
             GUILayout.BeginArea(new Rect(10, 10, 300, 300));
             if (!m_NetworkManager.IsClient && !m_NetworkManager.IsServer)
             {
-                StartButtons();
+                if (GUILayout.Button("Host (Relay)"))
+                    GetComponent<NetworkManagerRelay>().StartHostWithRelay();
+
+                GUILayout.TextField("", GUILayout.Width(200)); // Pour le code
+                if (GUILayout.Button("Join (Relay)"))
+                    GetComponent<NetworkManagerRelay>().JoinGameWithRelay();
             }
             else
             {
-                Time.timeScale = 1; // Reprendre le temps quand connecté
                 StatusLabels();
-
-                // Afficher la sélection de rôle si connecté et rôle non sélectionné
-                var playerObject = m_NetworkManager.SpawnManager.GetLocalPlayerObject();
-                if (playerObject != null)
-                {
-                    var player = playerObject.GetComponent<HelloWorldPlayer>();
-                    if (player.Role.Value == PlayerRole.None)
-                    {
-                        DrawRoleSelection();
-                    }
-                    else
-                    {
-                        SubmitNewPosition();
-                    }
-                }
+                SubmitNewPosition();
             }
-
             GUILayout.EndArea();
         }
 
@@ -126,3 +115,4 @@ namespace HelloWorld
         }
     }
 }
+*/

@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+
 namespace HelloWorld
 {
     public enum PlayerRole
@@ -9,37 +10,68 @@ namespace HelloWorld
         Specialiste,
         Technicien
     }
+
     public class HelloWorldPlayer : NetworkBehaviour
     {
         public NetworkVariable<Vector3> Position = new NetworkVariable<Vector3>();
-        public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>();
+        public NetworkVariable<PlayerRole> Role = new NetworkVariable<PlayerRole>(PlayerRole.None);
         private TextMeshPro roleText;
+        
+        // Static NetworkVariables pour suivre les rôles sélectionnés
+        private static NetworkVariable<bool> _specialisteSelected = new NetworkVariable<bool>();
+        private static NetworkVariable<bool> _technicienSelected = new NetworkVariable<bool>();
 
         public override void OnNetworkSpawn()
+        {
+            if (IsClient && IsOwner)
+            {
+                RequestRoleSyncServerRpc(NetworkManager.Singleton.LocalClientId);
+            }
+
+            CreateRoleText();
+            Role.OnValueChanged += OnRoleChanged;
+            UpdateRoleText(Role.Value);
+
+            if (IsClient && Role.Value == PlayerRole.None)
+            {
+                Debug.Log("Le joueur attend la sélection d'un rôle...");
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void RequestRoleSyncServerRpc(ulong clientId)
+        {
+            Debug.Log($"[Serveur] Synchronisation demandée par le client {clientId}");
+            SyncRoleSelectionClientRpc(_specialisteSelected.Value, _technicienSelected.Value, clientId);
+        }
+
+        [ClientRpc]
+        private void SyncRoleSelectionClientRpc(bool specialisteTaken, bool technicienTaken, ulong clientId)
+        {
+            if (NetworkManager.Singleton.LocalClientId == clientId)
+            {
+                _specialisteSelected.Value = specialisteTaken;
+                _technicienSelected.Value = technicienTaken;
+                Debug.Log($"[Client] Synchronisation reçue : Spécialiste = {_specialisteSelected.Value}, Technicien = {_technicienSelected.Value}");
+        
+                // Affiche le panneau de sélection pour le client
+                GameObject.FindObjectOfType<NetworkManagerRelay>()?.ShowRoleSelection();
+            }
+        }
+        [ClientRpc]
+        private void InitializePlayerClientRpc()
         {
             if (IsOwner)
             {
                 Move();
             }
-            
-            // Créer et configurer le texte 3D
-            CreateRoleText();
-            
-            // S'abonner au changement de rôle
-            Role.OnValueChanged += OnRoleChanged;
-            
-            // Mettre à jour le texte initial
-            UpdateRoleText(Role.Value);
         }
 
         private void CreateRoleText()
         {
-            // Créer un nouvel objet pour le texte
             GameObject textObject = new GameObject("RoleText");
             textObject.transform.SetParent(transform);
-            textObject.transform.localPosition = new Vector3(0, 2, 0); // Position au-dessus du joueur
-            
-            // Ajouter et configurer le TextMeshPro
+            textObject.transform.localPosition = new Vector3(0, 2, 0);
             roleText = textObject.AddComponent<TextMeshPro>();
             roleText.alignment = TextAlignmentOptions.Center;
             roleText.fontSize = 3;
@@ -49,6 +81,19 @@ namespace HelloWorld
         private void OnRoleChanged(PlayerRole previousValue, PlayerRole newValue)
         {
             UpdateRoleText(newValue);
+            if (IsServer)
+            {
+                
+                switch (newValue)
+                {
+                    case PlayerRole.Specialiste:
+                        _specialisteSelected.Value = true;
+                        break;
+                    case PlayerRole.Technicien:
+                        _technicienSelected.Value = true;
+                        break;
+                }
+            }
         }
 
         private void UpdateRoleText(PlayerRole role)
@@ -59,10 +104,39 @@ namespace HelloWorld
             }
         }
 
-        [ServerRpc]
-        public void SetRoleServerRpc(PlayerRole newRole)
+        [ServerRpc(RequireOwnership = false)]
+        public void SetRoleServerRpc(PlayerRole newRole, ServerRpcParams rpcParams = default)
         {
+            ulong clientId = rpcParams.Receive.SenderClientId;
+
+            if (!CanSelectRole(newRole))
+            {
+                Debug.LogWarning($"[Serveur] Le joueur {clientId} a essayé de prendre {newRole}, mais il est déjà pris.");
+                return;
+            }
+
             Role.Value = newRole;
+            Debug.Log($"[Serveur] Rôle {newRole} attribué au joueur {clientId}");
+
+            switch (newRole)
+            {
+                case PlayerRole.Specialiste:
+                    _specialisteSelected.Value = true;
+                    break;
+                case PlayerRole.Technicien:
+                    _technicienSelected.Value = true;
+                    break;
+            }
+        }
+
+        private bool CanSelectRole(PlayerRole role)
+        {
+            return role switch
+            {
+                PlayerRole.Specialiste => !_specialisteSelected.Value,
+                PlayerRole.Technicien => !_technicienSelected.Value,
+                _ => false
+            };
         }
 
         public void Move()
@@ -72,11 +146,11 @@ namespace HelloWorld
                 Debug.LogWarning("Player role not selected yet!");
                 return;
             }
-            SubmitPositionRequestRpc();
+            SubmitPositionRequestServerRpc();
         }
 
-        [Rpc(SendTo.Server)]
-        void SubmitPositionRequestRpc(RpcParams rpcParams = default)
+        [ServerRpc]
+        void SubmitPositionRequestServerRpc()
         {
             var randomPosition = GetRandomPositionOnPlane();
             transform.position = randomPosition;
@@ -90,12 +164,13 @@ namespace HelloWorld
 
         void Update()
         {
-            transform.position = Position.Value;
-            
-            // Faire face à la caméra pour le texte
-            if (roleText != null)
+            if (IsSpawned)
             {
-                roleText.transform.forward = Camera.main.transform.forward;
+                transform.position = Position.Value;
+                if (roleText != null && Camera.main != null)
+                {
+                    roleText.transform.forward = Camera.main.transform.forward;
+                }
             }
         }
     }
