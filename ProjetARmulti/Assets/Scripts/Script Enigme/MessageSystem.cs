@@ -1,67 +1,161 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using TMPro;
 using HelloWorld;
 
 public class MessageSystem : NetworkBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI messageDisplay; 
-    
-    [SerializeField]
-    private float messageDisplayTime = 10f;  
-    
+    [SerializeField] private GameObject lineRendererPrefab;
+    [SerializeField] private Color drawColor = Color.red;
+    [SerializeField] private float lineWidth = 0.1f;
+    [SerializeField] private LayerMask drawingPlane;
+
+    private LineRenderer currentLine;
+    private List<Vector3> currentLinePositions = new List<Vector3>();
+    private Camera mainCamera;
+    private bool isDrawing = false;
+
+    private void Start()
+    {
+        mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            mainCamera = FindObjectOfType<Camera>();
+            Debug.LogWarning("Main camera not found, using first available camera");
+        }
+    }
+
     private void Update()
     {
-   
-        if (IsOwner && Input.GetKeyDown(KeyCode.Space))
+        if (!IsClient) return;
+
+        var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+        if (playerObject == null) return;
+
+        var player = playerObject.GetComponent<HelloWorldPlayer>();
+        if (player == null || player.Role.Value != PlayerRole.Specialiste) return;
+
+        HandleDrawingInput();
+    }
+
+    private void HandleDrawingInput()
+    {
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Espace appuyé, tentative d'envoi du message");
-            var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-            if (playerObject != null)
+            Vector3? hitPoint = GetMouseHitPoint();
+            if (hitPoint.HasValue)
             {
-                var player = playerObject.GetComponent<HelloWorldPlayer>();
-                if (player.Role.Value != PlayerRole.None)
-                {
-                    SendMessageServerRpc(player.Role.Value);
-                }
+                StartDrawingServerRpc(hitPoint.Value);  // Appel ServerRpc pour créer la ligne
+                isDrawing = true;
             }
         }
+        else if (Input.GetMouseButton(0) && isDrawing)
+        {
+            Vector3? hitPoint = GetMouseHitPoint();
+            if (hitPoint.HasValue)
+            {
+                ContinueDrawingServerRpc(hitPoint.Value);  // Appel ServerRpc pour continuer la ligne
+            }
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            isDrawing = false;
+            EndDrawingServerRpc();  // Appel ServerRpc pour terminer le dessin
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ClearDrawingsServerRpc();  // Appel ServerRpc pour effacer les dessins
+        }
     }
 
-    [ServerRpc]
-    private void SendMessageServerRpc(PlayerRole senderRole, ServerRpcParams serverRpcParams = default)
+    private Vector3? GetMouseHitPoint()
     {
-        Debug.Log("Message envoyé depuis le serveur.");
-        ulong senderClientId = serverRpcParams.Receive.SenderClientId;
-        ShowMessageClientRpc(senderClientId, senderRole);  // Envoi du message aux autres clients
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, drawingPlane))
+        {
+            return hit.point;
+        }
+        return null;
     }
 
+    // ServerRpc pour démarrer le dessin (instancie et synchronise le dessin pour tous les clients)
+    [ServerRpc(RequireOwnership = false)]
+    private void StartDrawingServerRpc(Vector3 startPoint)
+    {
+        GameObject lineObj = Instantiate(lineRendererPrefab);
+        NetworkObject netObj = lineObj.GetComponent<NetworkObject>();
+        netObj.Spawn();  // Spawner l'objet en réseau
+
+        ConfigureLineRendererClientRpc(netObj.NetworkObjectId, startPoint);  // Synchroniser sur les clients
+    }
+
+    // ClientRpc pour configurer le LineRenderer
     [ClientRpc]
-    private void ShowMessageClientRpc(ulong senderClientId, PlayerRole senderRole)
+    private void ConfigureLineRendererClientRpc(ulong networkObjectId, Vector3 startPoint)
     {
-        Debug.Log($"Message reçu sur le client {NetworkManager.Singleton.LocalClientId} du joueur {senderClientId}");
-    
-        // Ne montre pas le message au joueur qui l'a envoyé
-        if (NetworkManager.Singleton.LocalClientId == senderClientId)
-            return;
+        GameObject lineObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].gameObject;
+        currentLine = lineObj.GetComponent<LineRenderer>();
+        currentLine.startWidth = lineWidth;
+        currentLine.endWidth = lineWidth;
+        currentLine.material.color = drawColor;
+        currentLinePositions.Clear();
 
-        // Affiche le message
-        if (messageDisplay != null)
+        AddPointToLineClientRpc(startPoint);  // Ajouter le premier point au dessin
+    }
+
+    // ServerRpc pour continuer à dessiner la ligne
+    [ServerRpc(RequireOwnership = false)]
+    private void ContinueDrawingServerRpc(Vector3 newPoint)
+    {
+        AddPointToLineClientRpc(newPoint);  // Ajouter un point au dessin
+    }
+
+    // ClientRpc pour ajouter un point au LineRenderer
+    [ClientRpc]
+    private void AddPointToLineClientRpc(Vector3 point)
+    {
+        if (currentLine != null)
         {
-            string roleText = senderRole.ToString();
-            messageDisplay.text = $"Coucou ! Message du {roleText}";
-            // Lance la coroutine pour faire disparaître le message après un délai
-            StartCoroutine(HideMessageAfterDelay());
+            currentLinePositions.Add(point);
+            currentLine.positionCount = currentLinePositions.Count;
+            currentLine.SetPositions(currentLinePositions.ToArray());
         }
     }
 
-    private System.Collections.IEnumerator HideMessageAfterDelay()
+    // ServerRpc pour terminer le dessin
+    [ServerRpc(RequireOwnership = false)]
+    private void EndDrawingServerRpc()
     {
-        yield return new WaitForSeconds(messageDisplayTime);
-        if (messageDisplay != null)
+        EndDrawingClientRpc();  // Fin du dessin
+    }
+
+    // ClientRpc pour terminer le dessin
+    [ClientRpc]
+    private void EndDrawingClientRpc()
+    {
+        currentLine = null;
+        currentLinePositions.Clear();
+    }
+
+    // ServerRpc pour effacer les dessins
+    [ServerRpc(RequireOwnership = false)]
+    private void ClearDrawingsServerRpc()
+    {
+        ClearDrawingsClientRpc();  // Effacer les dessins sur tous les clients
+    }
+
+    // ClientRpc pour effacer les dessins
+    [ClientRpc]
+    private void ClearDrawingsClientRpc()
+    {
+        LineRenderer[] lines = FindObjectsOfType<LineRenderer>();
+        foreach (LineRenderer line in lines)
         {
-            messageDisplay.text = "";
+            Destroy(line.gameObject);  // Détruire les objets de dessin localement
         }
+
+        currentLine = null;
+        currentLinePositions.Clear();
     }
 }

@@ -42,12 +42,12 @@ public class NetworkManagerRelay : MonoBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        // Quand le deuxième joueur se connecte
+        // Quand le deuxiï¿½me joueur se connecte
         if (networkManager.ConnectedClients.Count == 2)
         {
             // Cache seulement le panel de connexion
             connectionPanel.SetActive(false);
-            // Si c'est le client qui vient de se connecter, montrer son panel de rôle
+            // Si c'est le client qui vient de se connecter, montrer son panel de rï¿½le
             if (networkManager.IsClient && !networkManager.IsHost)
             {
                 ShowRoleSelection();
@@ -70,10 +70,10 @@ public class NetworkManagerRelay : MonoBehaviour
             if (codeText != null)
             {
                 codeText.text = "Code : " + joinCode;
-                Debug.Log("Code de connexion généré : " + joinCode);
+                Debug.Log("Code de connexion gï¿½nï¿½rï¿½ : " + joinCode);
             }
 
-            // Montrer immédiatement le panel de rôle pour le host
+            // Montrer immï¿½diatement le panel de rï¿½le pour le host
             ShowRoleSelection();
         }
         catch (System.Exception e)
@@ -103,33 +103,43 @@ public class NetworkManagerRelay : MonoBehaviour
         }
     }
 
-    private void ShowRoleSelection()
+    public void ShowRoleSelection()
     {
-        Debug.Log("Tentative d'affichage du panel de rôle");
+        Debug.Log("Tentative d'affichage du panel de rï¿½le");
         if (roleSelectionPanel != null)
         {
             roleSelectionPanel.SetActive(true);
-            Debug.Log("Panel de sélection de rôle activé");
+            Debug.Log("Panel de sï¿½lection de rï¿½le activï¿½");
         }
         else
         {
-            Debug.LogError("Role Selection Panel non assigné!");
+            Debug.LogError("Role Selection Panel non assignï¿½!");
         }
     }
 
     public void SelectRole(string role)
     {
-        var playerObject = networkManager.SpawnManager.GetLocalPlayerObject();
+        var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
         if (playerObject != null)
         {
             var player = playerObject.GetComponent<HelloWorldPlayer>();
             if (player != null)
             {
                 PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
+                Debug.Log($"[Client] Envoi de la sÃ©lection du rÃ´le {selectedRole} au serveur.");
                 player.SetRoleServerRpc(selectedRole);
-                roleSelectionPanel.SetActive(false); // Cache le panel de rôle après sélection
-                Debug.Log($"Rôle {role} sélectionné");
+
+                // Masquer le panneau aprÃ¨s la sÃ©lection
+                roleSelectionPanel.SetActive(false);
             }
+            else
+            {
+                Debug.LogError("[Client] Impossible de rÃ©cupÃ©rer le script HelloWorldPlayer.");
+            }
+        }
+        else
+        {
+            Debug.LogError("[Client] Aucun objet joueur trouvÃ©.");
         }
     }
 
