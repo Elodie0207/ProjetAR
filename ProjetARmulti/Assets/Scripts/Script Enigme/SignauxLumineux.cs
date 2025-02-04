@@ -14,6 +14,9 @@ public class SignauxLumineux : MonoBehaviour
     private Color originalColor;
     private static readonly int maxSequenceLength = 4;
 
+    // Référence publique pour le GameManager et le chronomètre
+    public GameManager gameManager; // Drag and drop le GameManager dans l'inspecteur
+
     void Start()
     {
         buttonRenderer = GetComponent<Renderer>();
@@ -104,6 +107,11 @@ public class SignauxLumineux : MonoBehaviour
         else
         {
             Debug.Log("Vous avez perdu. Cliquez sur Start pour recommencer.");
+            // Réduire le temps du chrono de 2 minutes (120 secondes) en cas d'erreur
+            if (gameManager != null)
+            {
+                gameManager.ReduceTime(120f); // Réduction du temps de 2 minutes
+            }
         }
     }
 

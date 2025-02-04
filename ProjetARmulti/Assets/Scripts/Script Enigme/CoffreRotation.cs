@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-
 public class CoffreRotation : MonoBehaviour
 {
     [Header("Configuration")]
@@ -12,9 +11,9 @@ public class CoffreRotation : MonoBehaviour
     public float rotationSpeed = 36f;
 
     [Header("Code Secret")]
-    public int[] correctCode = new int[5]; // Le code correct � d�finir dans l'Inspector
+    public int[] correctCode = new int[5]; // Le code correct à définir dans l'Inspector
 
-    [Header("Contr�les")]
+    [Header("Contrôles")]
     public Collider clockwiseButton;
     public Collider counterClockwiseButton;
     public Collider dialCollider;
@@ -22,6 +21,9 @@ public class CoffreRotation : MonoBehaviour
     private int currentNumber = 0;
     private int currentPosition = 0;
     private int[] savedNumbers = new int[5];
+
+    // Référence publique au GameManager pour accéder au chronomètre
+    public GameManager gameManager; // Drag and drop le GameManager dans l'inspecteur
 
     private void Start()
     {
@@ -136,8 +138,11 @@ public class CoffreRotation : MonoBehaviour
 
         Debug.Log(isCorrect ? "Code correct !" : "Code incorrect !");
 
-        // Vous pouvez ajouter ici d'autres actions en fonction du r�sultat
-        // Par exemple, ouvrir le coffre si le code est correct
+        // Si le code est incorrect, réduire le temps de 2 minutes
+        if (!isCorrect && gameManager != null)
+        {
+            gameManager.ReduceTime(120f); // Réduction du temps de 2 minutes (120 secondes)
+        }
     }
 
     private void UpdateCurrentDisplay()

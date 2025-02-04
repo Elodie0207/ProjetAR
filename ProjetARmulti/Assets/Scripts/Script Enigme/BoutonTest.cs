@@ -8,13 +8,13 @@ public class BoutonTest : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Bouton appuyé"); // Pour débugger
+        Debug.Log("Bouton appuyÃ©"); // Pour dÃ©bugger
         lightManager.Play();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Bouton cliqué"); // Pour débugger
+        Debug.Log("Bouton cliquÃ©"); // Pour dÃ©bugger
         lightManager.Play();
     }
 }

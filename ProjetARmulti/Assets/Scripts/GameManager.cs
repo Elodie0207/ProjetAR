@@ -42,4 +42,10 @@ public class GameManager : MonoBehaviour
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
     }
+    
+    public void ReduceTime(float seconds)
+    {
+        timeRemaining -= seconds;
+        if (timeRemaining < 0) timeRemaining = 0; // Ne pas laisser le temps aller en dessous de 0
+    }
 }
