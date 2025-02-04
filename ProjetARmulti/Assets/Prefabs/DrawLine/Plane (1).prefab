@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2975641431
+  GlobalObjectIdHash: 1686905710
   InScenePlacedSourceGlobalObjectIdHash: 1867137643
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0c3932fc67c0c47aa6ae3e326d8358, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRendererPrefab: {fileID: 0}
+  lineRendererPrefab: {fileID: 3990027884939888785, guid: ff9641c33ff888b4fb42b19c88196631, type: 3}
   drawColor: {r: 1, g: 0, b: 0, a: 1}
   lineWidth: 0.1
   drawingPlane:
