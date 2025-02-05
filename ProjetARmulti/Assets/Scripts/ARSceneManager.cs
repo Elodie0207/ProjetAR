@@ -7,8 +7,8 @@ using HelloWorld;
 public class ARSceneManager : NetworkBehaviour
 {
     [Header("Scene Names")]
-    [SerializeField] private string specialisteSceneName = "SpecialisteScene";
-    [SerializeField] private string technicienSceneName = "TechnicienScene";
+    [SerializeField] private string specialisteSceneName = "scene_Specialiste";
+    [SerializeField] private string technicienSceneName = "scene_Technicien";
 
     [Header("AR Setup")]
     [SerializeField] private VuforiaBehaviour vuforiaBehaviour;

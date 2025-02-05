@@ -1,20 +1,39 @@
+using UnityEngine;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using Unity.Netcode.Transports.UTP;
-using UnityEngine;
 using TMPro;
 using HelloWorld;
-using Unity.Networking.Transport.Relay;
 using Unity.Services.Core;
-using Unity.Services.Relay.Models;
+using UnityEngine.SceneManagement;
+using UnityEditor;
+using Unity.Networking.Transport.Relay;
 
 public class NetworkManagerRelay : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private TMP_Text codeText;
     [SerializeField] private TMP_InputField joinInput;
     [SerializeField] private GameObject roleSelectionPanel;
     [SerializeField] private GameObject connectionPanel;
+
+    [Header("Scene References")]
+    [SerializeField] private string specialisteSceneName = "scene_Specialiste";
+    [SerializeField] private string technicienSceneName = "scene_Technicien";
+    [SerializeField] private SceneAsset specialisteScene;
+    [SerializeField] private SceneAsset technicienScene;
+
+    private NetworkVariable<bool> clientConnected = new NetworkVariable<bool>(false);
+
+    private void Awake()
+    {
+        if (specialisteScene != null)
+            specialisteSceneName = specialisteScene.name;
+        if (technicienScene != null)
+            technicienSceneName = technicienScene.name;
+    }
 
     public void OnClientConnected(ulong clientId)
     {
@@ -100,16 +119,55 @@ public class NetworkManagerRelay : MonoBehaviour
 
     public void SelectRole(string role)
     {
-        var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-        if (playerObject != null)
+        Debug.Log($"SelectRole appelé avec le rôle: {role}");
+
+        if (NetworkManager.Singleton != null)
         {
-            var player = playerObject.GetComponent<HelloWorldPlayer>();
-            if (player != null)
+            PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
+            string sceneName = selectedRole == PlayerRole.Specialiste ?
+                specialisteSceneName : technicienSceneName;
+
+            Debug.Log($"Tentative de chargement de la scène: {sceneName}");
+
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
-                player.SetRoleServerRpc(selectedRole);
-                roleSelectionPanel.SetActive(false);
+                LoadSceneForRole(sceneName);
+            }
+            else if (NetworkManager.Singleton.IsClient)
+            {
+                RequestSceneLoadServerRpc(sceneName);
+            }
+
+            roleSelectionPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("NetworkManager est null!");
+        }
+    }
+
+    private void LoadSceneForRole(string sceneName)
+    {
+        if (Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+            Debug.Log($"Chargement de la scène {sceneName} en cours...");
+        }
+        else
+        {
+            Debug.LogError($"La scène {sceneName} n'existe pas dans le build!");
+            // Liste les scènes disponibles pour le debug
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                Debug.Log($"Scène disponible: {SceneUtility.GetScenePathByBuildIndex(i)}");
             }
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestSceneLoadServerRpc(string sceneName, ServerRpcParams serverRpcParams = default)
+    {
+        Debug.Log($"Serveur reçoit demande de chargement pour scène: {sceneName}");
+        LoadSceneForRole(sceneName);
     }
 }

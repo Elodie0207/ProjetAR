@@ -449,6 +449,10 @@ MonoBehaviour:
   joinInput: {fileID: 1447130890}
   roleSelectionPanel: {fileID: 1447130889}
   connectionPanel: {fileID: 1447130888}
+  specialisteSceneName: scene_Specialiste
+  technicienSceneName: scene_Technicien
+  specialisteScene: {fileID: 102900000, guid: 4e1da3f048b1a8a49b45d05e6bffa80d, type: 3}
+  technicienScene: {fileID: 102900000, guid: 68d9d44804324ff439d95cea1ad6c7f1, type: 3}
 --- !u!1001 &1447130887
 PrefabInstance:
   m_ObjectHideFlags: 0
