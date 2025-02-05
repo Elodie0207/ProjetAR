@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using Vuforia;
+using System.Linq;
 
 public class ARSync : NetworkBehaviour
 {
@@ -26,29 +27,45 @@ public class ARSync : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void UpdatePositionServerRpc(Vector3 position, Quaternion rotation)
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdatePositionServerRpc(Vector3 position, Quaternion rotation, ServerRpcParams serverRpcParams = default)
     {
+        ulong senderId = serverRpcParams.Receive.SenderClientId;
+
         sharedPosition.Value = position;
         sharedRotation.Value = rotation;
-        SyncTransformClientRpc();
+
+        SyncTransformClientRpc(position, rotation, new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds
+                    .Where(id => id != senderId)
+                    .ToArray()
+            }
+        });
     }
 
     [ClientRpc]
-    private void SyncTransformClientRpc()
+    private void SyncTransformClientRpc(Vector3 position, Quaternion rotation, ClientRpcParams clientRpcParams = default)
     {
-        if (!IsServer)
+        if (!IsOwner)
         {
-            transform.position = sharedPosition.Value;
-            transform.rotation = sharedRotation.Value;
+            transform.position = position;
+            transform.rotation = rotation;
         }
     }
 
     void Update()
     {
-        if (IsServer)
+        if (IsServer || IsOwner)
         {
             UpdatePositionServerRpc(transform.position, transform.rotation);
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
     }
 }

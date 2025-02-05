@@ -29,13 +29,22 @@ namespace HelloWorld
         {
             if (IsClient && IsOwner)
             {
-                // Demander la synchronisation des rôles
                 RequestRoleSyncServerRpc();
             }
 
             CreateRoleText();
             Role.OnValueChanged += OnRoleChanged;
             UpdateRoleText(Role.Value);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+
+            if (roleText != null)
+            {
+                Destroy(roleText.gameObject);
+            }
         }
 
         private void CreateRoleText()
@@ -65,7 +74,6 @@ namespace HelloWorld
         [ServerRpc(RequireOwnership = false)]
         private void RequestRoleSyncServerRpc()
         {
-            // Synchroniser l'état des rôles
             SyncRoleSelectionClientRpc(_specialisteSelected.Value, _technicienSelected.Value);
         }
 
@@ -79,39 +87,35 @@ namespace HelloWorld
         [ServerRpc(RequireOwnership = false)]
         public void SetRoleServerRpc(PlayerRole newRole)
         {
-            // Vérifier si le rôle peut être sélectionné
             if (!CanSelectRole(newRole))
             {
                 Debug.LogWarning($"Rôle {newRole} déjà pris !");
                 return;
             }
 
-            // Définir le rôle
             Role.Value = newRole;
 
-            // Marquer le rôle comme sélectionné
             switch (newRole)
             {
                 case PlayerRole.Specialiste:
                     _specialisteSelected.Value = true;
+                    _technicienSelected.Value = false;
                     break;
                 case PlayerRole.Technicien:
                     _technicienSelected.Value = true;
+                    _specialisteSelected.Value = false;
                     break;
             }
 
-            // Charger la scène spécifique pour chaque client
             LoadSceneForClientClientRpc(newRole, OwnerClientId);
         }
 
         [ClientRpc]
         private void LoadSceneForClientClientRpc(PlayerRole role, ulong clientId)
         {
-            // Vérifier si ce RPC est pour ce client spécifique
             if (NetworkManager.Singleton.LocalClientId != clientId)
                 return;
 
-            // Charger la scène correspondante
             string sceneName = role == PlayerRole.Specialiste
                 ? specialisteSceneName
                 : technicienSceneName;
@@ -135,7 +139,6 @@ namespace HelloWorld
             {
                 transform.position = Position.Value;
 
-                // Assurer que le texte de rôle fait toujours face à la caméra
                 if (roleText != null && Camera.main != null)
                 {
                     roleText.transform.forward = Camera.main.transform.forward;
