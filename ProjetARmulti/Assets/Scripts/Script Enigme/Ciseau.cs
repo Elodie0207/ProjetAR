@@ -8,11 +8,11 @@ public class Ciseau : MonoBehaviour
     public class FilConfig
     {
         public string color;
-        public GameObject filPartieGauche;  // Première partie du fil
-        public GameObject filPartieDroite;  // Deuxième partie du fil
+        public GameObject filPartieGauche;  // Partie gauche du fil
+        public GameObject filPartieDroite;  // Partie droite du fil
         public Animator animatorGauche;     // Animation partie gauche
         public Animator animatorDroite;     // Animation partie droite
-        public BoxCollider zoneCoupe;       // Zone où le ciseau peut couper
+        public BoxCollider zoneCoupe;       // Zone oÃ¹ le ciseau peut couper
         public bool estCoupe = false;
     }
 
@@ -24,10 +24,13 @@ public class Ciseau : MonoBehaviour
     public FilConfig filJaune = new FilConfig { color = "jaune" };
 
     [Header("Configuration Ciseau")]
-    public Transform pointCiseau;       // Point de référence sur l'Image Target du ciseau
-    public float distanceCoupe = 0.1f;  // Distance de détection pour la coupe
+    public Transform pointCiseau;       // Position du ciseau
+    public float distanceCoupe = 0.1f;  // Distance de dÃ©tection pour la coupe
 
     private bool partieTerminee = false;
+
+    // RÃ©fÃ©rence au GameManager
+    public GameManager gameManager; // Ã€ lier dans l'inspecteur
 
     private void Update()
     {
@@ -46,7 +49,7 @@ public class Ciseau : MonoBehaviour
         if (fil.estCoupe || fil.zoneCoupe == null || pointCiseau == null)
             return;
 
-        // Vérifie si le ciseau est dans la zone de coupe du fil
+        // VÃ©rifie si le ciseau est dans la zone de coupe du fil
         if (fil.zoneCoupe.bounds.Contains(pointCiseau.position))
         {
             CouperFil(fil);
@@ -71,7 +74,7 @@ public class Ciseau : MonoBehaviour
             }
 
             fil.estCoupe = true;
-            Debug.Log("Le fil " + fil.color + " a été coupé !");
+            Debug.Log("Le fil " + fil.color + " a Ã©tÃ© coupÃ© !");
             VerifierConditionJeu(fil.color);
         }
     }
@@ -81,31 +84,43 @@ public class Ciseau : MonoBehaviour
         switch (color.ToLower())
         {
             case "noir":
-                FinPartie(false);
-                Debug.Log("Vous avez perdu ! Le fil noir était piégé !");
+                Debug.Log("Vous avez perdu ! Le fil noir Ã©tait piÃ©gÃ© !");
+                FinPartie(false, true); // Chrono Ã  zÃ©ro
                 break;
             case "bleu":
-                FinPartie(true);
-                Debug.Log("Vous avez gagné ! C'était le bon fil !");
+                Debug.Log("Vous avez gagnÃ© ! C'Ã©tait le bon fil !");
+                FinPartie(true, false); // Victoire
                 break;
             default:
-                Debug.Log("Ce fil n'était pas le bon, continuez à chercher !");
+                Debug.Log("Ce fil n'Ã©tait pas le bon, continuez Ã  chercher !");
+                FinPartie(false, false); // Perte de temps seulement
                 break;
         }
     }
 
-    private void FinPartie(bool victoire)
+    private void FinPartie(bool victoire, bool chronoZero)
     {
         partieTerminee = true;
-        if (victoire)
+
+        if (gameManager != null)
         {
-            Debug.Log("Félicitations ! Vous avez désamorcé la bombe !");
-            // Ajoutez ici le code pour la victoire (effets, sons, etc.)
-        }
-        else
-        {
-            Debug.Log("BOOM ! La bombe a explosé !");
-            // Ajoutez ici le code pour l'échec (effets, sons, etc.)
+            if (victoire)
+            {
+                Debug.Log("FÃ©licitations ! Vous avez dÃ©samorcÃ© la bombe !");
+            }
+            else
+            {
+                if (chronoZero)
+                {
+                    gameManager.ReduceTime(gameManager.timeRemaining); // Met le chrono Ã  0
+                    Debug.Log("BOOM ! Le fil noir Ã©tait piÃ©gÃ©, le chrono est Ã  zÃ©ro !");
+                }
+                else
+                {
+                    gameManager.ReduceTime(120f); // Retire 2 minutes du chrono
+                    Debug.Log("Mauvais fil coupÃ©, 2 minutes en moins !");
+                }
+            }
         }
     }
 }

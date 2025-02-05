@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-
 public class NumericPuzzle : MonoBehaviour
 {
     [Header("Configuration")]
@@ -15,6 +14,9 @@ public class NumericPuzzle : MonoBehaviour
 
     private int[] currentCode = new int[4];
     private int currentPosition = 0;
+
+    // Référence au GameManager pour gérer le chrono
+    public GameManager gameManager; // Drag and drop le GameManager dans l'inspecteur
 
     private void Start()
     {
@@ -110,8 +112,11 @@ public class NumericPuzzle : MonoBehaviour
 
         Debug.Log(isCorrect ? "Code correct !" : "Code incorrect !");
 
-        // Vous pouvez ajouter ici d'autres actions en fonction du r�sultat
-        // Par exemple, ouvrir une porte si le code est correct
+        // Si le code est incorrect, réduire le temps de 2 minutes
+        if (!isCorrect && gameManager != null)
+        {
+            gameManager.ReduceTime(120f); // Retire 120 secondes du chrono
+        }
     }
 
     private void UpdateCurrentDisplay(int number)

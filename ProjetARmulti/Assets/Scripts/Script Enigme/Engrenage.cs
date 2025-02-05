@@ -16,18 +16,18 @@ public class Engrenage : MonoBehaviour
     public class GearSlot
     {
         public string slotId;
-        public Transform emplacementCible;   // Position où l'engrenage doit être placé
+        public Transform emplacementCible;   // Position oï¿½ l'engrenage doit ï¿½tre placï¿½
         public string gearIdAttendu;        // ID de l'engrenage qui doit aller ici
         public bool estRempli = false;
     }
 
     [Header("Configuration des engrenages")]
-    public MovableGear[] engrenagesMobiles;     // Les 4 engrenages à placer
-    public GearSlot[] emplacements;             // Les 4 emplacements à remplir
+    public MovableGear[] engrenagesMobiles;     // Les 4 engrenages ï¿½ placer
+    public GearSlot[] emplacements;             // Les 4 emplacements ï¿½ remplir
 
-    [Header("Paramètres de détection")]
+    [Header("Paramï¿½tres de dï¿½tection")]
     public float distanceValidation = 0.1f;     // Distance acceptable pour validation
-    public float angleValidation = 15f;         // Tolérance de rotation en degrés
+    public float angleValidation = 15f;         // Tolï¿½rance de rotation en degrï¿½s
 
     private int nombreEngrenagesPlaces = 0;
     private bool puzzleComplete = false;
@@ -74,8 +74,8 @@ public class Engrenage : MonoBehaviour
         slot.estRempli = true;
         nombreEngrenagesPlaces++;
 
-        Debug.Log($"Engrenage {gear.gearId} placé correctement dans l'emplacement {slot.slotId} !");
-        Debug.Log($"Progression : {nombreEngrenagesPlaces}/4 engrenages placés");
+        Debug.Log($"Engrenage {gear.gearId} placï¿½ correctement dans l'emplacement {slot.slotId} !");
+        Debug.Log($"Progression : {nombreEngrenagesPlaces}/4 engrenages placï¿½s");
 
         if (nombreEngrenagesPlaces >= engrenagesMobiles.Length)
         {
@@ -86,11 +86,11 @@ public class Engrenage : MonoBehaviour
     private void PuzzleComplete()
     {
         puzzleComplete = true;
-        Debug.Log("FÉLICITATIONS ! Tous les engrenages sont correctement placés !");
-        // Ici vous pouvez ajouter un effet visuel/sonore de victoire
+        Debug.Log("Fï¿½LICITATIONS ! Tous les engrenages sont correctement placï¿½s !");
+  
     }
 
-    // Optionnel : Méthode pour réinitialiser le puzzle
+   
     public void ReinitialiserPuzzle()
     {
         foreach (MovableGear gear in engrenagesMobiles)
@@ -103,6 +103,6 @@ public class Engrenage : MonoBehaviour
         }
         nombreEngrenagesPlaces = 0;
         puzzleComplete = false;
-        Debug.Log("Puzzle réinitialisé");
+        Debug.Log("Puzzle rï¿½initialisï¿½");
     }
 }
