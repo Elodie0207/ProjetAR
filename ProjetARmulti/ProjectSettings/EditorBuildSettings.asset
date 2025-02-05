@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/scene_Specialiste.unity
     guid: 4e1da3f048b1a8a49b45d05e6bffa80d
+  - enabled: 1
+    path: Assets/Scenes/scene_Technicien.unity
+    guid: 68d9d44804324ff439d95cea1ad6c7f1
   m_configObjects: {}

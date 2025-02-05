@@ -1,13 +1,13 @@
 using Unity.Netcode;
-using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Relay;
-using Unity.Services.Relay.Models;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using TMPro;
 using HelloWorld;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Core;
+using Unity.Services.Relay.Models;
 
 public class NetworkManagerRelay : MonoBehaviour
 {
@@ -15,43 +15,32 @@ public class NetworkManagerRelay : MonoBehaviour
     [SerializeField] private TMP_InputField joinInput;
     [SerializeField] private GameObject roleSelectionPanel;
     [SerializeField] private GameObject connectionPanel;
-    private NetworkManager networkManager;
-    private UnityTransport transport;
 
-    private async void Start()
+    public void OnClientConnected(ulong clientId)
     {
-        networkManager = GetComponent<NetworkManager>();
-        transport = GetComponent<UnityTransport>();
+        if (!NetworkManager.Singleton.IsServer) return;
 
-        networkManager.OnClientConnectedCallback += OnClientConnected;
-
-        if (roleSelectionPanel != null)
-            roleSelectionPanel.SetActive(false);
-
-        try
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
         {
-            await UnityServices.InitializeAsync();
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Debug.Log("Signed in anonymously");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError(e);
+            connectionPanel.SetActive(false);
+            ClientRpcParams clientRpcParams = new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { clientId }
+                }
+            };
+            ShowRoleSelectionClientRpc(clientRpcParams);
         }
     }
 
-    private void OnClientConnected(ulong clientId)
+    [ClientRpc]
+    private void ShowRoleSelectionClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        // Quand le deuxi�me joueur se connecte
-        if (networkManager.ConnectedClients.Count == 2)
+        if (roleSelectionPanel != null)
         {
-            // Cache seulement le panel de connexion
-            connectionPanel.SetActive(false);
-            // Si c'est le client qui vient de se connecter, montrer son panel de r�le
-            if (networkManager.IsClient && !networkManager.IsHost)
-            {
-                ShowRoleSelection();
-            }
+            roleSelectionPanel.SetActive(true);
+            Debug.Log("Panel de sélection de rôle activé");
         }
     }
 
@@ -59,26 +48,33 @@ public class NetworkManagerRelay : MonoBehaviour
     {
         try
         {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-            var relayServerData = new RelayServerData(allocation, "dtls");
-            transport.SetRelayServerData(relayServerData);
+            GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
 
-            networkManager.StartHost();
+            NetworkManager.Singleton.StartHost();
 
             if (codeText != null)
             {
                 codeText.text = "Code : " + joinCode;
-                Debug.Log("Code de connexion g�n�r� : " + joinCode);
             }
-
-            // Montrer imm�diatement le panel de r�le pour le host
             ShowRoleSelection();
         }
         catch (System.Exception e)
         {
-            Debug.LogError(e);
+            Debug.LogError($"Relay start error: {e.Message}");
+        }
+    }
+
+    public void ShowRoleSelection()
+    {
+        if (roleSelectionPanel != null)
+        {
+            roleSelectionPanel.SetActive(true);
         }
     }
 
@@ -86,34 +82,19 @@ public class NetworkManagerRelay : MonoBehaviour
     {
         try
         {
+            await UnityServices.InitializeAsync();
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
             string joinCode = joinInput.text;
-            Debug.Log("Tentative de connexion avec le code : " + joinCode);
-
             JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            var relayServerData = new RelayServerData(allocation, "dtls");
-            transport.SetRelayServerData(relayServerData);
-            
-            connectionPanel.SetActive(false);
 
-            networkManager.StartClient();
+            GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+            connectionPanel.SetActive(false);
+            NetworkManager.Singleton.StartClient();
         }
         catch (System.Exception e)
         {
-            Debug.LogError(e);
-        }
-    }
-
-    public void ShowRoleSelection()
-    {
-        Debug.Log("Tentative d'affichage du panel de r�le");
-        if (roleSelectionPanel != null)
-        {
-            roleSelectionPanel.SetActive(true);
-            Debug.Log("Panel de s�lection de r�le activ�");
-        }
-        else
-        {
-            Debug.LogError("Role Selection Panel non assign�!");
+            Debug.LogError($"Relay join error: {e.Message}");
         }
     }
 
@@ -126,26 +107,9 @@ public class NetworkManagerRelay : MonoBehaviour
             if (player != null)
             {
                 PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
-                Debug.Log($"[Client] Envoi de la sélection du rôle {selectedRole} au serveur.");
                 player.SetRoleServerRpc(selectedRole);
-
-                // Masquer le panneau après la sélection
                 roleSelectionPanel.SetActive(false);
             }
-            else
-            {
-                Debug.LogError("[Client] Impossible de récupérer le script HelloWorldPlayer.");
-            }
         }
-        else
-        {
-            Debug.LogError("[Client] Aucun objet joueur trouvé.");
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (networkManager != null)
-            networkManager.OnClientConnectedCallback -= OnClientConnected;
     }
 }
