@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Models/OBjcacher.fbx.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Models/OBjcacher.fbx.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/DES INDICE/OBjcacher.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/DES INDICE/OBjcacher.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/MessageSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/MessageSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SpecialistObjectInteraction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SpecialistObjectInteraction.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +23,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/NeedleVisibility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/RadioFrequencyControl.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.netcode.gameobjects@1.9.1/Editor/NetworkBehaviourEditor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.netcode.gameobjects@1.9.1/Runtime/Logging/NetworkLog.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -112,6 +116,9 @@
       <workItem from="1738676860008" duration="1076000" />
       <workItem from="1738678047601" duration="2296000" />
       <workItem from="1738680565703" duration="1615000" />
+      <workItem from="1738872682578" duration="1000" />
+      <workItem from="1738873071462" duration="290000" />
+      <workItem from="1738873455957" duration="5372000" />
     </task>
     <servers />
   </component>
