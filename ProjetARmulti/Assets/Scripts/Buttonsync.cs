@@ -15,12 +15,12 @@ public class ButtonSync : NetworkBehaviour
     [Header("Feedback")]
     public GameObject objetAActiver;
 
-    // Network variables pour synchroniser l'état entre serveur et clients
+    // Network variables pour synchroniser l'ï¿½tat entre serveur et clients
     private NetworkVariable<bool> joueur1Appuye = new NetworkVariable<bool>(false);
     private NetworkVariable<bool> joueur2Appuye = new NetworkVariable<bool>(false);
     private NetworkVariable<float> tempsAppuiJoueur1 = new NetworkVariable<float>(0f);
     private NetworkVariable<float> tempsAppuiJoueur2 = new NetworkVariable<float>(0f);
-
+    public GameManager gameManager;
     private void Update()
     {
         // Seulement le client peut interagir
@@ -66,7 +66,7 @@ public class ButtonSync : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void OnJoueur1ClickServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        // Vérifier le rôle du joueur
+        // Vï¿½rifier le rï¿½le du joueur
         var player = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(serverRpcParams.Receive.SenderClientId)
             .GetComponent<HelloWorldPlayer>();
 
@@ -74,18 +74,18 @@ public class ButtonSync : NetworkBehaviour
 
         joueur1Appuye.Value = true;
         tempsAppuiJoueur1.Value = Time.time;
-        Debug.Log("Joueur 1 a appuyé ! En attente du Joueur 2...");
+        Debug.Log("Joueur 1 a appuyï¿½ ! En attente du Joueur 2...");
 
         VerifierSynchronisationClientRpc();
 
-        // Planifier un reset après un délai
+        // Planifier un reset aprï¿½s un dï¿½lai
         StartCoroutine(ResetJoueur1Apres(delaiMaxEntreAppuis));
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void OnJoueur2ClickServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        // Vérifier le rôle du joueur
+        // Vï¿½rifier le rï¿½le du joueur
         var player = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(serverRpcParams.Receive.SenderClientId)
             .GetComponent<HelloWorldPlayer>();
 
@@ -93,11 +93,11 @@ public class ButtonSync : NetworkBehaviour
 
         joueur2Appuye.Value = true;
         tempsAppuiJoueur2.Value = Time.time;
-        Debug.Log("Joueur 2 a appuyé ! En attente du Joueur 1...");
+        Debug.Log("Joueur 2 a appuyï¿½ ! En attente du Joueur 1...");
 
         VerifierSynchronisationClientRpc();
 
-        // Planifier un reset après un délai
+        // Planifier un reset aprï¿½s un dï¿½lai
         StartCoroutine(ResetJoueur2Apres(delaiMaxEntreAppuis));
     }
 
@@ -111,12 +111,16 @@ public class ButtonSync : NetworkBehaviour
             float diffTemps = Mathf.Abs(tempsAppuiJoueur1.Value - tempsAppuiJoueur2.Value);
             if (diffTemps <= delaiMaxEntreAppuis)
             {
-                Debug.Log("SUCCÈS ! Les deux joueurs ont appuyé en même temps !");
+                Debug.Log("SUCCï¿½S ! Les deux joueurs ont appuyï¿½ en mï¿½me temps !");
                 ActionSynchroniseeClientRpc();
             }
             else
             {
-                Debug.Log("ÉCHEC ! L'appui n'était pas synchronisé - Différence : " + diffTemps.ToString("F2") + " secondes");
+                Debug.Log("ï¿½CHEC ! L'appui n'ï¿½tait pas synchronisï¿½ - Diffï¿½rence : " + diffTemps.ToString("F2") + " secondes");
+                if (gameManager != null)
+                {
+                    gameManager.ReduceTime(120f); // RÃ©duction du temps de 2 minutes
+                }
                 ResetToutClientRpc();
             }
         }
@@ -128,7 +132,7 @@ public class ButtonSync : NetworkBehaviour
         if (objetAActiver != null)
         {
             objetAActiver.SetActive(true);
-            Debug.Log("Objet activé avec succès !");
+            Debug.Log("Objet activï¿½ avec succï¿½s !");
         }
         ResetToutClientRpc();
     }
@@ -146,7 +150,7 @@ public class ButtonSync : NetworkBehaviour
         if (joueur1Appuye.Value)
         {
             joueur1Appuye.Value = false;
-            Debug.Log("Temps écoulé pour Joueur 1 - Réessayez !");
+            Debug.Log("Temps ï¿½coulï¿½ pour Joueur 1 - Rï¿½essayez !");
         }
     }
 
@@ -156,13 +160,13 @@ public class ButtonSync : NetworkBehaviour
         if (joueur2Appuye.Value)
         {
             joueur2Appuye.Value = false;
-            Debug.Log("Temps écoulé pour Joueur 2 - Réessayez !");
+            Debug.Log("Temps ï¿½coulï¿½ pour Joueur 2 - Rï¿½essayez !");
         }
     }
 
     public override void OnNetworkSpawn()
     {
-        // Configuration initiale si nécessaire
+        // Configuration initiale si nï¿½cessaire
         base.OnNetworkSpawn();
     }
 }
