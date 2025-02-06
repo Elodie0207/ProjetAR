@@ -1,168 +1,190 @@
 using UnityEngine;
 using Unity.Netcode;
 using HelloWorld;
-using System;
 
-public class ButtonSync : NetworkBehaviour
+public class ARButtonSync : NetworkBehaviour
 {
-    [Header("Boutons")]
-    public BoxCollider boutonJoueur1;
-    public BoxCollider boutonJoueur2;
+    [SerializeField] private GameObject buttonPrefab;
+    [SerializeField] private float delaiMaxEntreAppuis = 1.0f;
 
-    [Header("Configuration")]
-    public float delaiMaxEntreAppuis = 1.0f;
+    private NetworkVariable<bool> technicienAppuye = new NetworkVariable<bool>(false);
+    private NetworkVariable<bool> specialisteAppuye = new NetworkVariable<bool>(false);
+    private NetworkVariable<float> tempsAppuiTechnicien = new NetworkVariable<float>(0f);
+    private NetworkVariable<float> tempsAppuiSpecialiste = new NetworkVariable<float>(0f);
+    private bool buttonSpawned = false;
+    private GameObject spawnedButton;
 
-    [Header("Feedback")]
-    public GameObject objetAActiver;
-
-    // Network variables pour synchroniser l'état entre serveur et clients
-    private NetworkVariable<bool> joueur1Appuye = new NetworkVariable<bool>(false);
-    private NetworkVariable<bool> joueur2Appuye = new NetworkVariable<bool>(false);
-    private NetworkVariable<float> tempsAppuiJoueur1 = new NetworkVariable<float>(0f);
-    private NetworkVariable<float> tempsAppuiJoueur2 = new NetworkVariable<float>(0f);
-
-    private void Update()
+    void Start()
     {
-        // Seulement le client peut interagir
-        if (!IsClient) return;
+        Debug.Log($"Start - ButtonPrefab assigné: {buttonPrefab != null}, IsServer: {IsServer}");
+    }
 
-        // Pour les tests PC avec souris
-        if (Input.GetMouseButtonDown(0))
+    public void OnTargetFound()
+    {
+        Debug.Log($"Target trouvée! IsServer: {IsServer}, buttonSpawned: {buttonSpawned}, buttonPrefab: {buttonPrefab != null}");
+
+        if (!IsServer)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider == boutonJoueur1)
-                {
-                    OnJoueur1ClickServerRpc();
-                }
-                else if (hit.collider == boutonJoueur2)
-                {
-                    OnJoueur2ClickServerRpc();
-                }
-            }
+            Debug.Log("Client détecté, demande au serveur");
+            SpawnRequestServerRpc();
+            return;
         }
 
-        // Pour mobile (garder la partie tactile)
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        SpawnButton();
+    }
+
+    private void SpawnButton()
+    {
+        Debug.Log("SpawnButton appelé");
+        if (buttonSpawned)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider == boutonJoueur1)
-                {
-                    OnJoueur1ClickServerRpc();
-                }
-                else if (hit.collider == boutonJoueur2)
-                {
-                    OnJoueur2ClickServerRpc();
-                }
-            }
+            Debug.Log("Bouton déjà spawné");
+            return;
         }
-    }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void OnJoueur1ClickServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        // Vérifier le rôle du joueur
-        var player = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(serverRpcParams.Receive.SenderClientId)
-            .GetComponent<HelloWorldPlayer>();
-
-        if (player.Role.Value != PlayerRole.Technicien) return;
-
-        joueur1Appuye.Value = true;
-        tempsAppuiJoueur1.Value = Time.time;
-        Debug.Log("Joueur 1 a appuyé ! En attente du Joueur 2...");
-
-        VerifierSynchronisationClientRpc();
-
-        // Planifier un reset après un délai
-        StartCoroutine(ResetJoueur1Apres(delaiMaxEntreAppuis));
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void OnJoueur2ClickServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        // Vérifier le rôle du joueur
-        var player = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(serverRpcParams.Receive.SenderClientId)
-            .GetComponent<HelloWorldPlayer>();
-
-        if (player.Role.Value != PlayerRole.Specialiste) return;
-
-        joueur2Appuye.Value = true;
-        tempsAppuiJoueur2.Value = Time.time;
-        Debug.Log("Joueur 2 a appuyé ! En attente du Joueur 1...");
-
-        VerifierSynchronisationClientRpc();
-
-        // Planifier un reset après un délai
-        StartCoroutine(ResetJoueur2Apres(delaiMaxEntreAppuis));
-    }
-
-    [ClientRpc]
-    private void VerifierSynchronisationClientRpc()
-    {
-        if (!IsServer) return;
-
-        if (joueur1Appuye.Value && joueur2Appuye.Value)
+        if (buttonPrefab == null)
         {
-            float diffTemps = Mathf.Abs(tempsAppuiJoueur1.Value - tempsAppuiJoueur2.Value);
-            if (diffTemps <= delaiMaxEntreAppuis)
+            Debug.LogError("ButtonPrefab non assigné!");
+            return;
+        }
+
+        Debug.Log("Tentative d'instantiation du bouton");
+        spawnedButton = Instantiate(buttonPrefab, transform.position, transform.rotation);
+
+        if (spawnedButton != null)
+        {
+            NetworkObject netObj = spawnedButton.GetComponent<NetworkObject>();
+            if (netObj != null)
             {
-                Debug.Log("SUCCÈS ! Les deux joueurs ont appuyé en même temps !");
-                ActionSynchroniseeClientRpc();
+                netObj.Spawn();
+                spawnedButton.transform.SetParent(transform);
+                spawnedButton.transform.localPosition = Vector3.zero;
+                buttonSpawned = true;
+                Debug.Log("Bouton spawné avec succès!");
             }
             else
             {
-                Debug.Log("ÉCHEC ! L'appui n'était pas synchronisé - Différence : " + diffTemps.ToString("F2") + " secondes");
-                ResetToutClientRpc();
+                Debug.LogError("Pas de NetworkObject sur le bouton!");
+                Destroy(spawnedButton);
+            }
+        }
+        else
+        {
+            Debug.LogError("Échec de l'instantiation!");
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnRequestServerRpc()
+    {
+        Debug.Log("SpawnRequestServerRpc reçu");
+        SpawnButton();
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) // Clic gauche
+        {
+            HandleClick();
+        }
+    }
+
+    private void HandleClick()
+    {
+        if (!IsClient) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.gameObject == spawnedButton)
+            {
+                var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+                if (playerObject == null) return;
+
+                var player = playerObject.GetComponent<HelloWorldPlayer>();
+                if (player == null) return;
+
+                if (player.Role.Value == PlayerRole.Technicien)
+                {
+                    OnTechnicienClickServerRpc();
+                }
+                else if (player.Role.Value == PlayerRole.Specialiste)
+                {
+                    OnSpecialisteClickServerRpc();
+                }
             }
         }
     }
 
-    [ClientRpc]
-    private void ActionSynchroniseeClientRpc()
+    [ServerRpc(RequireOwnership = false)]
+    private void OnTechnicienClickServerRpc()
     {
-        if (objetAActiver != null)
+        technicienAppuye.Value = true;
+        tempsAppuiTechnicien.Value = Time.time;
+        Debug.Log("Technicien a appuyé!");
+        VerifierSynchronisation();
+        StartCoroutine(ResetTechnicienApres(delaiMaxEntreAppuis));
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void OnSpecialisteClickServerRpc()
+    {
+        specialisteAppuye.Value = true;
+        tempsAppuiSpecialiste.Value = Time.time;
+        Debug.Log("Spécialiste a appuyé!");
+        VerifierSynchronisation();
+        StartCoroutine(ResetSpecialisteApres(delaiMaxEntreAppuis));
+    }
+
+    private void VerifierSynchronisation()
+    {
+        if (!IsServer) return;
+
+        if (technicienAppuye.Value && specialisteAppuye.Value)
         {
-            objetAActiver.SetActive(true);
-            Debug.Log("Objet activé avec succès !");
+            float diffTemps = Mathf.Abs(tempsAppuiTechnicien.Value - tempsAppuiSpecialiste.Value);
+            if (diffTemps <= delaiMaxEntreAppuis)
+            {
+                Debug.Log("Synchronisation réussie!");
+                SynchronisationReussieClientRpc();
+            }
+            ResetBoutonsClientRpc();
         }
-        ResetToutClientRpc();
     }
 
     [ClientRpc]
-    private void ResetToutClientRpc()
+    private void SynchronisationReussieClientRpc()
     {
-        joueur1Appuye.Value = false;
-        joueur2Appuye.Value = false;
+        Debug.Log("Les deux joueurs ont appuyé en même temps!");
+        // Ajoutez ici ce qui doit se passer quand les joueurs réussissent
     }
 
-    private System.Collections.IEnumerator ResetJoueur1Apres(float delai)
+    [ClientRpc]
+    private void ResetBoutonsClientRpc()
+    {
+        technicienAppuye.Value = false;
+        specialisteAppuye.Value = false;
+    }
+
+    private System.Collections.IEnumerator ResetTechnicienApres(float delai)
     {
         yield return new WaitForSeconds(delai);
-        if (joueur1Appuye.Value)
+        if (technicienAppuye.Value)
         {
-            joueur1Appuye.Value = false;
-            Debug.Log("Temps écoulé pour Joueur 1 - Réessayez !");
+            technicienAppuye.Value = false;
+            Debug.Log("Temps écoulé pour le Technicien!");
         }
     }
 
-    private System.Collections.IEnumerator ResetJoueur2Apres(float delai)
+    private System.Collections.IEnumerator ResetSpecialisteApres(float delai)
     {
         yield return new WaitForSeconds(delai);
-        if (joueur2Appuye.Value)
+        if (specialisteAppuye.Value)
         {
-            joueur2Appuye.Value = false;
-            Debug.Log("Temps écoulé pour Joueur 2 - Réessayez !");
+            specialisteAppuye.Value = false;
+            Debug.Log("Temps écoulé pour le Spécialiste!");
         }
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        // Configuration initiale si nécessaire
-        base.OnNetworkSpawn();
     }
 }
