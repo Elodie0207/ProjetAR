@@ -32,6 +32,8 @@ public class Engrenage : MonoBehaviour
     private int nombreEngrenagesPlaces = 0;
     private bool puzzleComplete = false;
 
+    public GameManager gameManager;
+
     private void Update()
     {
         if (!puzzleComplete)
@@ -87,7 +89,9 @@ public class Engrenage : MonoBehaviour
     {
         puzzleComplete = true;
         Debug.Log("F�LICITATIONS ! Tous les engrenages sont correctement plac�s !");
-  
+        gameManager.SetLightColor(true);
+
+
     }
 
    

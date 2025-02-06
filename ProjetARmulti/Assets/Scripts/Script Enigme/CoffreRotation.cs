@@ -127,6 +127,15 @@ public class CoffreRotation : MonoBehaviour
             }
         }
 
+        if (isCorrect)
+        {
+            gameManager.SetLightColor(true); // Lumière verte ici
+        }
+        else
+        {
+            gameManager.SetLightColor(false); // Lumière rouge
+        }
+
         Color resultColor = isCorrect ? Color.green : Color.red;
         foreach (TextMeshPro display in numberDisplays)
         {

@@ -90,6 +90,7 @@ public class Ciseau : MonoBehaviour
             case "bleu":
                 Debug.Log("Vous avez gagné ! C'était le bon fil !");
                 FinPartie(true, false); // Victoire
+                gameManager.SetLightColor(true);
                 break;
             default:
                 Debug.Log("Ce fil n'était pas le bon, continuez à chercher !");

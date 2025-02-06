@@ -5,8 +5,11 @@ public class RadioFrequencyControl : MonoBehaviour
 {
     public Transform arTarget;
  
-    public TextMesh frequencyText; 
-    
+    public TextMesh frequencyText;
+
+    public GameManager gameManager;
+
+
     private float previousRotation; 
     private float frequency = 0.0f; 
     private float rotationSpeed = 0.1f; 
@@ -70,7 +73,8 @@ public class RadioFrequencyControl : MonoBehaviour
             if (timer >= timeToWin)
             {
                 Debug.Log("Gagné!");
-                isWinner = true; 
+                isWinner = true;
+                gameManager.SetLightColor(true);
             }
         }
         else

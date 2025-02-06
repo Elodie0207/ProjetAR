@@ -103,14 +103,20 @@ public class SignauxLumineux : MonoBehaviour
         {
             Debug.Log("Vous avez gagné ! Le jeu est terminé.");
             DisableStartButton();
+
+            // Ajoutez cette ligne
+            if (gameManager != null)
+            {
+                gameManager.SetLightColor(true);
+            }
         }
         else
         {
             Debug.Log("Vous avez perdu. Cliquez sur Start pour recommencer.");
-            // Réduire le temps du chrono de 2 minutes (120 secondes) en cas d'erreur
             if (gameManager != null)
             {
-                gameManager.ReduceTime(120f); // Réduction du temps de 2 minutes
+                gameManager.ReduceTime(120f);
+                gameManager.SetLightColor(false);
             }
         }
     }
