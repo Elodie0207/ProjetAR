@@ -9,6 +9,7 @@ TagManager:
   - Petite Aiguille
   - 12
   - 6
+  - ARCamera
   layers:
   - Default
   - TransparentFX
