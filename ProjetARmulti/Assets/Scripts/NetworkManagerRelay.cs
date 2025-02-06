@@ -4,11 +4,11 @@ using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using TMPro;
 using HelloWorld;
 using Unity.Services.Core;
-using System.Linq;
-using Unity.Networking.Transport.Relay;
+using UnityEngine.SceneManagement;
 
 public class NetworkManagerRelay : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class NetworkManagerRelay : MonoBehaviour
     [SerializeField] private GameObject roleSelectionPanel;
     [SerializeField] private GameObject connectionPanel;
 
-    [Header("Scene References")]
+    [Header("Scene Names")]
     [SerializeField] private string specialisteSceneName = "scene_Specialiste";
     [SerializeField] private string technicienSceneName = "scene_Technicien";
 
@@ -103,25 +103,18 @@ public class NetworkManagerRelay : MonoBehaviour
     {
         Debug.Log($"SelectRole appelé avec le rôle: {role}");
 
-        if (NetworkManager.Singleton != null)
+        PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
+        string sceneToLoad = selectedRole == PlayerRole.Specialiste
+            ? specialisteSceneName
+            : technicienSceneName;
+
+        // Charger directement la scène
+        SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single);
+
+        // Masquer le panneau de sélection de rôle
+        if (roleSelectionPanel != null)
         {
-            PlayerRole selectedRole = (PlayerRole)System.Enum.Parse(typeof(PlayerRole), role);
-
-            var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-            if (playerObject != null)
-            {
-                var player = playerObject.GetComponent<HelloWorldPlayer>();
-                if (player != null)
-                {
-                    player.SetRoleServerRpc(selectedRole);
-                }
-            }
-
             roleSelectionPanel.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("NetworkManager est null!");
         }
     }
 
