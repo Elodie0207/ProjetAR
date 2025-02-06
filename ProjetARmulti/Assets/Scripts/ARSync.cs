@@ -3,6 +3,8 @@ using Unity.Netcode;
 using Vuforia;
 using System.Linq;
 using HelloWorld;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class ARSync : NetworkBehaviour
 {
@@ -14,8 +16,10 @@ public class ARSync : NetworkBehaviour
     private NetworkVariable<Vector3> sharedPosition = new NetworkVariable<Vector3>();
     private NetworkVariable<Quaternion> sharedRotation = new NetworkVariable<Quaternion>();
     private NetworkVariable<bool> isTracking = new NetworkVariable<bool>(false);
+    private NetworkVariable<string> currentSceneName = new NetworkVariable<string>();
 
     private HelloWorldPlayer playerScript;
+    private TextMeshPro roleText;
 
     void Start()
     {
@@ -32,6 +36,9 @@ public class ARSync : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        // S'abonner à l'événement de chargement de scène
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         if (IsServer)
         {
             InitializeAR();
@@ -48,6 +55,37 @@ public class ARSync : NetworkBehaviour
 
         // S'assurer que l'objet persiste entre les scènes
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Mettre à jour le nom de la scène courante
+        if (IsOwner)
+        {
+            currentSceneName.Value = scene.name;
+        }
+
+        // Réinitialiser les références Vuforia si nécessaire
+        if (vuforiaBehaviour == null)
+        {
+            vuforiaBehaviour = FindObjectOfType<VuforiaBehaviour>();
+        }
+
+        // Réinitialiser le cube de test si nécessaire
+        if (testCube == null)
+        {
+            testCube = GameObject.FindGameObjectWithTag("TestCube");
+        }
     }
 
     private void InitializeAR()
@@ -69,49 +107,50 @@ public class ARSync : NetworkBehaviour
 
     void Update()
     {
+        if (!IsSpawned) return;
+
         if (IsOwner && isTracking.Value)
         {
-            // Envoyer les mises à jour de position seulement si on est en train de tracker
+            // Envoyer les mises à jour de position même dans une autre scène
             UpdatePositionServerRpc(transform.position, transform.rotation);
         }
         else if (!IsOwner && isTracking.Value)
         {
-            // Appliquer les positions partagées pour les autres clients
+            // Appliquer les positions partagées
             transform.position = sharedPosition.Value;
             transform.rotation = sharedRotation.Value;
         }
 
+        // Debug logs
         if (IsOwner && isTracking.Value)
         {
-            Debug.Log($"Position envoyée : {transform.position}");
+            Debug.Log($"Scène actuelle : {currentSceneName.Value}, Position envoyée : {transform.position}");
         }
         else if (!IsOwner && isTracking.Value)
         {
-            Debug.Log($"Position reçue : {sharedPosition.Value}");
+            Debug.Log($"Scène actuelle : {currentSceneName.Value}, Position reçue : {sharedPosition.Value}");
         }
-        
+
+        // Mise à jour du texte de rôle face à la caméra
+        if (roleText != null && Camera.main != null)
+        {
+            roleText.transform.forward = Camera.main.transform.forward;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void UpdatePositionServerRpc(Vector3 position, Quaternion rotation)
     {
+        // Mettre à jour les variables réseau
         sharedPosition.Value = position;
         sharedRotation.Value = rotation;
 
-        // Envoyer la mise à jour à tous les autres clients sauf l'expéditeur
-        SyncTransformClientRpc(position, rotation, new ClientRpcParams
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = NetworkManager.Singleton.ConnectedClientsIds
-                    .Where(id => id != OwnerClientId)
-                    .ToArray()
-            }
-        });
+        // Synchroniser avec tous les clients
+        SyncTransformClientRpc(position, rotation);
     }
 
     [ClientRpc]
-    private void SyncTransformClientRpc(Vector3 position, Quaternion rotation, ClientRpcParams clientRpcParams = default)
+    private void SyncTransformClientRpc(Vector3 position, Quaternion rotation)
     {
         if (!IsOwner && isTracking.Value)
         {
@@ -130,6 +169,9 @@ public class ARSync : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        // Désabonner des événements
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
         if (playerScript != null)
         {
             playerScript.Role.OnValueChanged -= OnPlayerRoleChanged;
