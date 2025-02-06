@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: -8618992244094929842}
   - component: {fileID: 3121455241668654779}
   - component: {fileID: 5433409398324908712}
+  - component: {fileID: 643813365652955819}
+  - component: {fileID: 3928478243335690598}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -125,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 413416633
+  GlobalObjectIdHash: 308141182
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -189,6 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vuforiaBehaviour: {fileID: 2604127526954773254, guid: 308a1c4f92cc055468936d97ed1e517c, type: 3}
+  testCube: {fileID: 0}
 --- !u!114 &5433409398324908712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,5 +202,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bba1eac800a8abb4286306d5ff00a949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &643813365652955819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5749351789941499923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 522c99c0b0b7a9047820fccd2497981b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3928478243335690598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5749351789941499923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92766c76228625d4995cc75d77e78396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

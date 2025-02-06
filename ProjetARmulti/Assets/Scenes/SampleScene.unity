@@ -508,8 +508,6 @@ MonoBehaviour:
   connectionPanel: {fileID: 12447690925986509}
   specialisteSceneName: scene_Specialiste
   technicienSceneName: scene_Technicien
-  specialisteScene: {fileID: 102900000, guid: 4e1da3f048b1a8a49b45d05e6bffa80d, type: 3}
-  technicienScene: {fileID: 102900000, guid: 68d9d44804324ff439d95cea1ad6c7f1, type: 3}
 --- !u!114 &1280039939 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1799767129972584247, guid: f654bf0872fb80a4aa778f60bce0f609, type: 3}
