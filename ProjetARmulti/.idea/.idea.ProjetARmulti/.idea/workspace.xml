@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/DES INDICE/OBjcacher.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/DES INDICE/OBjcacher.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/TST.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TST.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SpecialistObjectInteraction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/SpecialistObjectInteraction.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +114,7 @@
       <workItem from="1738680565703" duration="1615000" />
       <workItem from="1738872682578" duration="1000" />
       <workItem from="1738873071462" duration="290000" />
-      <workItem from="1738873455957" duration="13780000" />
+      <workItem from="1738873455957" duration="14308000" />
     </task>
     <servers />
   </component>
