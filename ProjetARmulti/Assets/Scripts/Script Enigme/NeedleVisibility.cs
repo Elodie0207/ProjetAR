@@ -10,10 +10,10 @@ public class NeedleVisibilty : MonoBehaviour
     public string tag12 = "12";  // Tag pour la position "12"
     public string tag6 = "6";    // Tag pour la position "6"
     
-    public Text timeDisplay;     // Texte affichant l'heure (format 00:00)
+    public TextMesh timeDisplay;     // Texte affichant l'heure (format 00:00)
     private float timeInMinutes = 0f;  // Compteur d'heure en minutes (0 à 720 minutes pour 12:00)
     
-   
+    public GameManager gameManager; 
 
     // Mise à jour de l'affichage de l'heure
     private void UpdateTimeDisplay()
@@ -84,7 +84,7 @@ public class NeedleVisibilty : MonoBehaviour
   
     void ValidateTime()
     {
-       
+        gameManager.SetLightColor(true); 
         Debug.Log("L'heure est correcte: 12:30 !");
     }
 }

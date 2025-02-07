@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement; // Importer la gestion des scènes
+
 public class GameManager : MonoBehaviour
 {
     public float timeRemaining = 900f; // 15 minutes en secondes
@@ -17,9 +19,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Lancer le timer au début si nécessaire
+        lancerTimer();
+    }
+
+    public void lancerTimer()
+    {
         timerIsRunning = true;
-
-
     }
 
     void Update()
@@ -36,6 +42,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Temps écoulé !");
                 timeRemaining = 0;
                 timerIsRunning = false;
+                RestartScene(); // Relancer la scène si le temps est écoulé
             }
         }
     }
@@ -45,14 +52,13 @@ public class GameManager : MonoBehaviour
         timeToDisplay += 1; 
         int minutes = Mathf.FloorToInt(timeToDisplay / 60);
         int seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        
+
         if (timerText != null)
         {
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
     }
 
-  
     public void SetLightColor(bool success)
     {
         if (lightObject != null)
@@ -75,7 +81,7 @@ public class GameManager : MonoBehaviour
                     {
                         Debug.Log("Victoire finale !");
                         finalVictorySound.Play(); 
-                       
+                        timerIsRunning = false;
                     }
                 }
                 else
@@ -89,8 +95,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-private IEnumerator ResetLightColor(Renderer renderer, Color originalColor, float duration)
+    private IEnumerator ResetLightColor(Renderer renderer, Color originalColor, float duration)
     {
         yield return new WaitForSeconds(duration);
         renderer.material.color = originalColor;
@@ -101,4 +106,6 @@ private IEnumerator ResetLightColor(Renderer renderer, Color originalColor, floa
         timeRemaining -= seconds;
         if (timeRemaining < 0) timeRemaining = 0; // Ne pas laisser le temps aller en dessous de 0
     }
+
+  
 }

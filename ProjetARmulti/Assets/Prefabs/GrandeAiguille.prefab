@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6657297260316510727}
   - component: {fileID: 5430691226079255226}
   - component: {fileID: 6928965107069966333}
-  - component: {fileID: 2127672647440111359}
+  - component: {fileID: 4114267058947507512}
   m_Layer: 0
-  m_Name: ImageTarget 2
+  m_Name: GrandeAiguille
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,18 +50,18 @@ MonoBehaviour:
   PreviewVisible: 1
   RuntimeOcclusion: 0
   RuntimeCollider: 0
-  mTrackableName: donut
+  mTrackableName: PopArt_femme
   mInitializedInEditor: 1
   mDataSetPath: Vuforia/ProjetAR.xml
-  mAspectRatio: 1
+  mAspectRatio: 1.25
   mImageTargetType: 0
   mWidth: 500
-  mHeight: 500
+  mHeight: 625
   mRuntimeTexture: {fileID: 0}
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
-  mPreview: {fileID: 2127672647440111359}
+  mPreview: {fileID: 4114267058947507512}
 --- !u!114 &6928965107069966333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   OnTargetLost:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2127672647440111359
+--- !u!114 &4114267058947507512
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mObserverBehaviour: {fileID: 5430691226079255226}
   mHiddenRoot: {fileID: 0}
-  mTargetName: donut
+  mTargetName: PopArt_femme
   mDatasetName: Vuforia/ProjetAR.xml
   mCastedBehaviour: {fileID: 5430691226079255226}
   mMeshFilter: {fileID: 0}
@@ -235,6 +235,7 @@ MonoBehaviour:
   tag12: 12
   tag6: 6
   timeDisplay: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!65 &440526861712540417
 BoxCollider:
   m_ObjectHideFlags: 0

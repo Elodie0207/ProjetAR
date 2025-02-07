@@ -11,8 +11,8 @@ public class LightManager : MonoBehaviour
     private bool isPressed = false;
     private bool inDelay = false;
 
-    // Référence au GameManager
-    public GameManager gameManager; // À lier dans l'inspecteur
+    
+    public GameManager gameManager;
 
     public void Play()
     {
@@ -21,7 +21,8 @@ public class LightManager : MonoBehaviour
             isPressed = true;
         }
         else if (isPressed == true && inDelay == true)
-        {
+        { 
+            gameManager.SetLightColor(true); 
             print("victoire");
             return;
         }
@@ -30,11 +31,10 @@ public class LightManager : MonoBehaviour
             return; 
         }
 
-        // On continue si le bouton n'est pas déjà pressé et qu'il n'est pas en délai
+    
         MeshRenderer[] lights;
         lights = GetComponentsInChildren<MeshRenderer>();
 
-        // Lancement de la coroutine pour afficher la lumière rouge
         StartCoroutine(DelayLightRed(lights));
     }
 
@@ -45,14 +45,14 @@ public class LightManager : MonoBehaviour
 
     private IEnumerator DelayLightRed(MeshRenderer[] lights)
     {
-        // Allume la lumière rouge pendant 1 seconde
+       
         foreach (MeshRenderer light in lights)
         {
             yield return new WaitForSeconds(1);
             light.material = LightRed;
         }
 
-        yield return new WaitForSeconds(3);  // Temps en rouge (3 secondes)
+        yield return new WaitForSeconds(3);  
 
         // Allume la lumière verte
         foreach (MeshRenderer light in lights)
@@ -61,9 +61,9 @@ public class LightManager : MonoBehaviour
         }
         inDelay = true;
 
-        yield return new WaitForSeconds(1);  // Temps avec la lumière verte
+        yield return new WaitForSeconds(1);  
 
-        // Éteint les lumières et les remet en blanc
+       
         foreach (MeshRenderer light in lights)
         {
             light.material = LightWhite;
@@ -71,17 +71,18 @@ public class LightManager : MonoBehaviour
 
         inDelay = false;
 
-        // Si la lumière était rouge, on retire 2 minutes
+
         if (lights[0].material == LightRed)
         {
-            // Si c'est rouge, on retire 2 minutes
+           
             if (gameManager != null)
             {
-                gameManager.ReduceTime(120f); // Réduit le temps de 2 minutes
+                gameManager.SetLightColor(false); 
+                gameManager.ReduceTime(120f); 
             }
         }
 
-        // Réinitialisation de l'état
+      
         isPressed = false;
     }
 }

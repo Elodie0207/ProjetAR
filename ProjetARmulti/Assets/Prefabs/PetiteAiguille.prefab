@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 3484954148940087775}
   - component: {fileID: 8080034132834442224}
   - component: {fileID: 4359312444883634747}
-  - component: {fileID: 1051889663570355563}
+  - component: {fileID: 8512476392318476914}
   m_Layer: 0
-  m_Name: ImageTarget 1
+  m_Name: PetiteAiguille
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
-  mPreview: {fileID: 1051889663570355563}
+  mPreview: {fileID: 8512476392318476914}
 --- !u!114 &4359312444883634747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   OnTargetLost:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1051889663570355563
+--- !u!114 &8512476392318476914
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -283,6 +283,7 @@ MonoBehaviour:
   tag12: 12
   tag6: 6
   timeDisplay: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!4 &1011480271714762172 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fdae347e92beb964487a9261782ca8d0, type: 3}

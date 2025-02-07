@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4963231931081691163}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03903768, y: -0, z: -0, w: 0.9992378}
+  m_LocalRotation: {x: -0.039041795, y: 0, z: 0, w: 0.99923766}
   m_LocalPosition: {x: 0, y: 0.6949158, z: 17.787567}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -50,13 +50,13 @@ MonoBehaviour:
   PreviewVisible: 1
   RuntimeOcclusion: 0
   RuntimeCollider: 0
-  mTrackableName: HarryPotter
+  mTrackableName: Reine
   mInitializedInEditor: 1
   mDataSetPath: Vuforia/ProjetAR.xml
-  mAspectRatio: 1.43
+  mAspectRatio: 1.3877552
   mImageTargetType: 0
   mWidth: 500
-  mHeight: 715
+  mHeight: 693.87756
   mRuntimeTexture: {fileID: 0}
   mMotionHint: 1
   mTrackingOptimization: 0
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mObserverBehaviour: {fileID: 6588347889694593217}
   mHiddenRoot: {fileID: 0}
-  mTargetName: HarryPotter
+  mTargetName: Reine
   mDatasetName: Vuforia/ProjetAR.xml
   mCastedBehaviour: {fileID: 6588347889694593217}
   mMeshFilter: {fileID: 0}
@@ -151,7 +151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6023705749322959255, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 98
+      value: -7
       objectReference: {fileID: 0}
     - target: {fileID: 6023705749322959255, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -159,7 +159,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6023705749322959255, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -69
+      value: -66
       objectReference: {fileID: 0}
     - target: {fileID: 6023705749322959255, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -191,7 +191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7195322053743830538, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2505116924
+      value: 2415233085
       objectReference: {fileID: 0}
     - target: {fileID: 7896393044771422354, guid: 9560b2723ff1c14458355ae49251e16c, type: 3}
       propertyPath: lineWidth
