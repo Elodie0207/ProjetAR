@@ -3,15 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Boites/Boite1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Boites/Boite1.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/book/Livres.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/book/Livres.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/CoffreRotation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/CoffreRotation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/MorseScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/MorseScript.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/NumericPuzzle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/NumericPuzzle.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/AudioManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/AudioManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/Ciseau.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/Ciseau.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/CutFils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Script Enigme/CutFils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +119,7 @@
       <workItem from="1738873071462" duration="290000" />
       <workItem from="1738873455957" duration="14308000" />
       <workItem from="1738948745131" duration="3807000" />
-      <workItem from="1738957187028" duration="1071000" />
+      <workItem from="1738957187028" duration="4525000" />
     </task>
     <servers />
   </component>

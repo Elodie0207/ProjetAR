@@ -1,119 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // Pour recharger la scène si nécessaire
-
 
 public class CutFils : MonoBehaviour
 {
-    [System.Serializable]
-    public class FilConfig
+    public string color; 
+    public Animator animatorGauche;
+    public Animator animatorDroite;
+    public GameObject filPartieGauche;
+    public GameObject filPartieDroite;
+    private bool estCoupe = false;
+
+    private static bool ciseauSelectionne = false;
+    public GameManager gameManager;
+    private void OnMouseDown()
     {
-        public string color;
-        public Collider buttonCollider;
-        public Animator animator1;
-        public Animator animator2;
-        public GameObject buttonObject;
-        public bool isAlreadyClicked = false;
-    }
+        if (!ciseauSelectionne) return; 
 
-    [Header("Configuration des fils")]
-    public FilConfig filVert = new FilConfig { color = "vert" };
-    public FilConfig filNoir = new FilConfig { color = "noir" };
-    public FilConfig filBleu = new FilConfig { color = "bleu" };
-    public FilConfig filRouge = new FilConfig { color = "rouge" };
-    public FilConfig filJaune = new FilConfig { color = "jaune" };
-
-    private bool gameOver = false;
-
-    private void Update()
-    {
-        if (!gameOver && Input.GetMouseButtonDown(0))
+        if (!estCoupe)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+           
+         
+            if (filPartieDroite != null)
+                filPartieDroite.SetActive(false); 
 
-            if (Physics.Raycast(ray, out hit))
-            {
-                CheckAndTriggerFil(hit.collider, filVert);
-                CheckAndTriggerFil(hit.collider, filNoir);
-                CheckAndTriggerFil(hit.collider, filBleu);
-                CheckAndTriggerFil(hit.collider, filRouge);
-                CheckAndTriggerFil(hit.collider, filJaune);
-            }
+            estCoupe = true;
+            Debug.Log("Le fil " + color + " a Ã©tÃ© coupÃ© !");
+            VerifierConditionJeu();
         }
     }
 
-    private void CheckAndTriggerFil(Collider hitCollider, FilConfig fil)
+    private void VerifierConditionJeu()
     {
-        if (hitCollider == fil.buttonCollider && !fil.isAlreadyClicked && !gameOver)
+        if (color == "noir")
         {
-            // Active les animations
-            if (fil.animator1 != null)
+            if (gameManager != null)
             {
-                fil.animator1.enabled = true;
-                fil.animator1.Play("anim_Fils_" + fil.color + ".001", 0);
+                gameManager.SetLightColor(false); // LumiÃ¨re rouge
+                gameManager.timeRemaining = 0f; 
             }
-
-            if (fil.animator2 != null)
-            {
-                fil.animator2.enabled = true;
-                fil.animator2.Play("anim_Fils_" + fil.color + ".002", 0);
-            }
-
-            // Désactive le bouton et détruit l'objet
-            if (fil.buttonCollider != null)
-            {
-                Destroy(fil.buttonCollider.gameObject);
-            }
-
-            if (fil.buttonObject != null)
-            {
-                Destroy(fil.buttonObject);
-            }
-
-            fil.isAlreadyClicked = true;
-            Debug.Log("Le fil " + fil.color + " a été coupé !");
-
-            CheckGameCondition(fil.color);
+            Debug.Log("BOOM  ! Le fil noir Ã©tait piÃ©gÃ© !");
         }
-    }
-
-    private void CheckGameCondition(string color)
-    {
-        switch (color.ToLower())
+        else if (color == "bleu")
         {
-            case "noir":
-                GameOver(false);
-                Debug.Log("Vous avez perdu ! Le fil noir était piégé !");
-                break;
-
-            case "bleu":
-                GameOver(true);
-                Debug.Log("Vous avez gagné ! C'était le bon fil !");
-                break;
-        }
-    }
-
-    private void GameOver(bool hasWon)
-    {
-        gameOver = true;
-        if (hasWon)
-        {
-            Debug.Log("Félicitations ! Vous avez désamorcé la bombe !");
+            gameManager.SetLightColor(true); // LumiÃ¨re rouge
+            Debug.Log(" Vous avez gagnÃ© ! C'Ã©tait le bon fil !");
         }
         else
+          
         {
-            Debug.Log("BOOM ! La bombe a explosé !");
+            gameManager.ReduceTime(120f);
+            gameManager.SetLightColor(false); // LumiÃ¨re rouge
+            Debug.Log(" Pas le bon fil !");
         }
 
-        // Retirer la recharge automatique de la scène
-        // Invoke("ReloadScene", 3f);
+        // Une fois le fil coupÃ©, on dÃ©sÃ©lectionne le ciseau
+        ciseauSelectionne = false;
     }
 
-    // On ne recharge plus automatiquement la scène
-    /*private void ReloadScene()
+    public static void SelectionnerCiseau()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }*/
+        ciseauSelectionne = true;
+        Debug.Log(" Ciseau sÃ©lectionnÃ© !");
+    }
 }
