@@ -17,6 +17,7 @@ public class CoffreRotation : MonoBehaviour
     public Collider clockwiseButton;
     public Collider counterClockwiseButton;
     public Collider dialCollider;
+    public Collider okButton; // Nouveau bouton pour valider un chiffre
 
     private int currentNumber = 0;
     private int currentPosition = 0;
@@ -62,6 +63,10 @@ public class CoffreRotation : MonoBehaviour
                     RotateCounterClockwise();
                 }
                 else if (hit.collider == dialCollider)
+                {
+                    ValidateAndMoveNext();
+                }
+                else if (hit.collider == okButton)
                 {
                     ValidateAndMoveNext();
                 }
@@ -150,6 +155,7 @@ public class CoffreRotation : MonoBehaviour
         // Si le code est incorrect, réduire le temps de 2 minutes
         if (!isCorrect && gameManager != null)
         {
+            ResetCode();
             gameManager.ReduceTime(120f); // Réduction du temps de 2 minutes (120 secondes)
         }
     }

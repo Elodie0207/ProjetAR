@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
 
     void DisplayTime(float timeToDisplay)
     {
-        timeToDisplay += 1; // Pour éviter d'afficher 00:59 au lieu de 01:00
+        timeToDisplay += 1; 
         int minutes = Mathf.FloorToInt(timeToDisplay / 60);
         int seconds = Mathf.FloorToInt(timeToDisplay % 60);
         
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Fonction pour gérer la couleur de la lumière
+  
     public void SetLightColor(bool success)
     {
         if (lightObject != null)
@@ -74,14 +74,14 @@ public class GameManager : MonoBehaviour
                     if (successfulEnigmas >= 5)
                     {
                         Debug.Log("Victoire finale !");
-                        finalVictorySound.Play(); // Joue le son de victoire finale
-                        // Actions supplémentaires de victoire
+                        finalVictorySound.Play(); 
+                       
                     }
                 }
                 else
                 {
-                    failureSound.Play(); // Joue le son d'échec
-                    successfulEnigmas = 0; // Réinitialiser en cas d'échec
+                    failureSound.Play(); 
+                    successfulEnigmas = 0; 
                 }
 
                 StartCoroutine(ResetLightColor(renderer, originalColor, 3f));

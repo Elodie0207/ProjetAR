@@ -11,6 +11,8 @@ public class MorseScript : MonoBehaviour
         if (gameObject.name.ToLower().Contains("gauche"))
         {
             Debug.Log("Réponse correcte !");
+            gameManager.SetLightColor(true); 
+
         }
         else if (gameObject.name.ToLower().Contains("droite"))
         {
@@ -18,6 +20,7 @@ public class MorseScript : MonoBehaviour
             if (gameManager != null)
             {
                 gameManager.ReduceTime(360f); 
+                gameManager.SetLightColor(false); 
             }
         }
     }

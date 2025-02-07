@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 472220436480892889}
   - component: {fileID: 1129049325945476269}
   - component: {fileID: 3311931073118074099}
+  - component: {fileID: 5135718366991158230}
   - component: {fileID: 3150807879338633332}
-  - component: {fileID: 877143749636792461}
+  - component: {fileID: 327762196800608544}
   m_Layer: 0
   m_Name: Livres
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MonoBehaviour:
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
-  mPreview: {fileID: 877143749636792461}
+  mPreview: {fileID: 327762196800608544}
 --- !u!114 &3311931073118074099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,6 +108,27 @@ MonoBehaviour:
   OnTargetLost:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5135718366991158230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6629031498613444833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 4101045497
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &3150807879338633332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,7 +152,8 @@ MonoBehaviour:
   - {fileID: 5015315486161038567}
   - {fileID: 7170634010409797192}
   sliderPages: {fileID: 0}
---- !u!114 &877143749636792461
+  sliderCanvas: {fileID: 0}
+--- !u!114 &327762196800608544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

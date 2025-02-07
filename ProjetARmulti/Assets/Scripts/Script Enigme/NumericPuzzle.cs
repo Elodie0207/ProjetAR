@@ -124,6 +124,7 @@ public class NumericPuzzle : MonoBehaviour
         // Si le code est incorrect, réduire le temps de 2 minutes
         if (!isCorrect && gameManager != null)
         {
+            ResetCode();
             gameManager.ReduceTime(120f); // Retire 120 secondes du chrono
         }
     }
