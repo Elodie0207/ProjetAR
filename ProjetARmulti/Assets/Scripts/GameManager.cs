@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Temps écoulé !");
                 timeRemaining = 0;
                 timerIsRunning = false;
-                RestartScene(); // Relancer la scène si le temps est écoulé
+               
             }
         }
     }
