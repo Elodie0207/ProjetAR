@@ -9,6 +9,8 @@ TagManager:
   - Petite Aiguille
   - 12
   - 6
+  - ARCamera
+  - SpawnCube
   layers:
   - Default
   - TransparentFX

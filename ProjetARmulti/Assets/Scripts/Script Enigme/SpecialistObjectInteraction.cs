@@ -1,120 +1,174 @@
+using HelloWorld;
 using UnityEngine;
 using Unity.Netcode;
-using HelloWorld;
 
 public class SpecialistObjectInteraction : NetworkBehaviour
 {
-    // Materials for different roles
+    [SerializeField] private GameObject objectToSpawn;
     [SerializeField] private Material specialistMaterial;
     [SerializeField] private Material technicianMaterial;
 
-    // Reference to the object's renderer
-    private Renderer objectRenderer;
+    private NetworkVariable<Quaternion> syncedRotation = new NetworkVariable<Quaternion>(
+        Quaternion.identity,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
-    // Network variables to track object state
-    private NetworkVariable<PlayerRole> currentAllowedRole = new NetworkVariable<PlayerRole>(PlayerRole.None);
+    private GameObject spawnedObject;
+    private NetworkObject spawnedNetObject;
+    private NetworkVariable<bool> hasSpawned = new NetworkVariable<bool>(false);
+    private NetworkVariable<ulong> objectOwner = new NetworkVariable<ulong>();
+    private NetworkVariable<NetworkObjectReference> spawnedObjectRef = new NetworkVariable<NetworkObjectReference>();
+    private NetworkVariable<bool> isSpecialist = new NetworkVariable<bool>(true);
 
-    void Awake()
-    {
-        objectRenderer = GetComponent<Renderer>();
-    }
+    private bool isObjectSelected = false;  // Indique si l'objet est sélectionné pour rotation
+    private float rotationSpeed = 30f;  // Ajuste cette valeur pour la vitesse de rotation
 
     public override void OnNetworkSpawn()
     {
-        // Setup network variable callbacks
-        currentAllowedRole.OnValueChanged += OnRoleAllowedChanged;
-
-        // Initial setup of materials
-        UpdateMaterialBasedOnRole();
+        base.OnNetworkSpawn();
+        spawnedObjectRef.OnValueChanged += OnSpawnedObjectChanged;
+        syncedRotation.OnValueChanged += OnSyncedRotationChanged;
     }
 
-    private void UpdateMaterialBasedOnRole()
+    public override void OnNetworkDespawn()
     {
-        if (!IsServer) return;
-
-        // Only update renderer if we have a renderer component
-        if (objectRenderer == null) return;
-
-        // Set default to technician material
-        objectRenderer.material = technicianMaterial;
+        base.OnNetworkDespawn();
+        spawnedObjectRef.OnValueChanged -= OnSpawnedObjectChanged;
+        syncedRotation.OnValueChanged -= OnSyncedRotationChanged;
     }
 
-    // Server-side method to set object interaction permission
-    [ServerRpc(RequireOwnership = false)]
-    public void SetInteractionPermissionServerRpc(PlayerRole requestingRole)
+    private void OnSyncedRotationChanged(Quaternion previousValue, Quaternion newValue)
     {
-        // Invert the material logic
-        if (requestingRole == PlayerRole.Technicien)
+        if (spawnedObject != null)
         {
-            currentAllowedRole.Value = PlayerRole.Technicien;
-            objectRenderer.material = specialistMaterial;
-        }
-        else
-        {
-            currentAllowedRole.Value = PlayerRole.Specialiste;
-            objectRenderer.material = technicianMaterial;
+            spawnedObject.transform.rotation = newValue;
         }
     }
 
-    // Callback when allowed role changes
-    private void OnRoleAllowedChanged(PlayerRole previousRole, PlayerRole newRole)
+    private void OnSpawnedObjectChanged(NetworkObjectReference previousValue, NetworkObjectReference newValue)
     {
-        Debug.Log($"Object interaction permission changed from {previousRole} to {newRole}");
+        if (newValue.TryGet(out NetworkObject netObj))
+        {
+            spawnedObject = netObj.gameObject;
+            UpdateMaterialClientRpc(isSpecialist.Value);
+        }
     }
 
-    // Client-side interaction method
-    [ServerRpc(RequireOwnership = false)]
-    private void TryInteractServerRpc(ulong clientId)
+    [ClientRpc]
+    private void UpdateMaterialClientRpc(bool isSpecialistRole)
     {
-        // Find the player object
-        var playerObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
-
-        if (playerObject == null)
+        if (spawnedObject != null)
         {
-            Debug.LogError("Player object not found!");
-            return;
+            Renderer renderer = spawnedObject.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                if (NetworkManager.Singleton.LocalClientId == objectOwner.Value)
+                {
+                    renderer.material = specialistMaterial;
+                }
+                else
+                {
+                    renderer.material = technicianMaterial;
+                }
+            }
         }
+    }
 
-        // Get the player's role
+    void Update()
+    {
+        if (spawnedObject == null || !hasSpawned.Value) return;
+
+        var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+        if (playerObject == null) return;
+
         var player = playerObject.GetComponent<HelloWorldPlayer>();
-        if (player == null)
+        if (player == null || player.Role.Value != PlayerRole.Technicien) return; // Seul le technicien peut faire tourner l'objet
+
+        // Détection du clic de souris pour sélectionner l'objet
+        if (Input.GetMouseButtonDown(0))  // Clic gauche de la souris
         {
-            Debug.LogError("HelloWorldPlayer component not found!");
-            return;
+            if (IsObjectClicked())
+            {
+                isObjectSelected = true;
+            }
         }
 
-        // Check if the player can interact
-        // Inverting the interaction logic
-        if (player.Role.Value == PlayerRole.Technicien &&
-            currentAllowedRole.Value == PlayerRole.Technicien)
+        // Si l'objet est sélectionné et le bouton de la souris est maintenu enfoncé
+        if (isObjectSelected && Input.GetMouseButton(0))
         {
-            // Perform interaction logic here
-            Debug.Log("Technician interacted with the object!");
+            float mouseX = Input.GetAxis("Mouse X");
+            float mouseY = Input.GetAxis("Mouse Y");
 
-            // Example of potential interaction - you can expand this
-            transform.position += Vector3.up * 0.5f; // Simple vertical movement
+            if (mouseX != 0f || mouseY != 0f)
+            {
+                // Rotation horizontale autour de l'axe Y (gauche/droite)
+                Quaternion horizontalRotation = Quaternion.Euler(0f, mouseX * rotationSpeed, 0f);
+
+                // Rotation verticale autour de l'axe X (haut/bas)
+                Quaternion verticalRotation = Quaternion.Euler(-mouseY * rotationSpeed, 0f, 0f);
+
+                // Applique les deux rotations à la transformation de l'objet
+                Quaternion newRotation = spawnedObject.transform.rotation * horizontalRotation * verticalRotation;
+
+                // Envoie la rotation au serveur pour la synchroniser avec tous les clients
+                UpdateRotationServerRpc(newRotation);
+            }
         }
-        else
+
+        // Si on relâche le clic, la rotation cesse
+        if (Input.GetMouseButtonUp(0))  // Clic gauche de la souris
         {
-            Debug.Log("Object cannot be interacted with by this role.");
+            isObjectSelected = false;
+        }
+    }
+
+    // Vérifie si la souris clique sur l'objet
+    private bool IsObjectClicked()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.collider.gameObject == spawnedObject;
+        }
+
+        return false;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateRotationServerRpc(Quaternion newRotation)
+    {
+        // Si la rotation a changé, on la met à jour côté serveur
+        if (syncedRotation.Value != newRotation)
+        {
+            syncedRotation.Value = newRotation;  // Mise à jour de la rotation côté serveur
         }
     }
 
     void OnMouseDown()
     {
-        // Only attempt interaction if this is a client
         if (!IsClient) return;
-
-        // Attempt to interact using the local client ID
-        TryInteractServerRpc(NetworkManager.Singleton.LocalClientId);
+        RequestSpawnServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
-    public override void OnDestroy()
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestSpawnServerRpc(ulong clientId)
     {
-        // Cleanup network variable callbacks
-        if (currentAllowedRole != null)
-            currentAllowedRole.OnValueChanged -= OnRoleAllowedChanged;
+        if (hasSpawned.Value) return;
 
-        base.OnDestroy();
+        Vector3 spawnPosition = transform.position + Vector3.up * 1.0f;
+        spawnedObject = Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
+        spawnedNetObject = spawnedObject.GetComponent<NetworkObject>();
+
+        if (spawnedNetObject != null)
+        {
+            spawnedNetObject.SpawnWithOwnership(clientId);
+            objectOwner.Value = clientId;
+            hasSpawned.Value = true;
+            spawnedObjectRef.Value = new NetworkObjectReference(spawnedNetObject);
+            isSpecialist.Value = true;
+        }
     }
 }

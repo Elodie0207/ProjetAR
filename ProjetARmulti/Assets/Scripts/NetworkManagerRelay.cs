@@ -59,6 +59,8 @@ public class NetworkManagerRelay : MonoBehaviour
     {
         try
         {
+            var configJson = JsonUtility.ToJson(networkManager.NetworkConfig, true);
+            Debug.Log($"Host Config: {configJson}");
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
@@ -86,6 +88,8 @@ public class NetworkManagerRelay : MonoBehaviour
     {
         try
         {
+            var configJson = JsonUtility.ToJson(networkManager.NetworkConfig, true);
+            Debug.Log($"Client Config: {configJson}");
             string joinCode = joinInput.text;
             Debug.Log("Tentative de connexion avec le code : " + joinCode);
 

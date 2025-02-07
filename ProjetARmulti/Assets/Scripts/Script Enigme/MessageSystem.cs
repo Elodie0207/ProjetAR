@@ -23,6 +23,34 @@ public class MessageSystem : NetworkBehaviour
             mainCamera = FindObjectOfType<Camera>();
             Debug.LogWarning("Main camera not found, using first available camera");
         }
+
+        // S'assurer que le joueur est bien connecté avant d'exécuter le code
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+
+        var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+        if (playerObject != null)
+        {
+            var player = playerObject.GetComponent<HelloWorldPlayer>();
+            if (player != null && player.Role.Value == PlayerRole.Technicien)
+            {
+                HideDrawingPlane();
+            }
+        }
+    }
+
+    private void HideDrawingPlane()
+    {
+        GameObject plane = GameObject.FindWithTag("DrawingPlane"); // Assurez-vous que le plane a ce tag
+        if (plane != null)
+        {
+            plane.GetComponent<MeshRenderer>().enabled = false; // Cache seulement l'affichage
+            // plane.SetActive(false); // Désactive complètement si nécessaire
+        }
     }
 
     private void Update()
@@ -45,7 +73,7 @@ public class MessageSystem : NetworkBehaviour
             Vector3? hitPoint = GetMouseHitPoint();
             if (hitPoint.HasValue)
             {
-                StartDrawingServerRpc(hitPoint.Value);  // Appel ServerRpc pour créer la ligne
+                StartDrawingServerRpc(hitPoint.Value);
                 isDrawing = true;
             }
         }
@@ -54,43 +82,49 @@ public class MessageSystem : NetworkBehaviour
             Vector3? hitPoint = GetMouseHitPoint();
             if (hitPoint.HasValue)
             {
-                ContinueDrawingServerRpc(hitPoint.Value);  // Appel ServerRpc pour continuer la ligne
+                ContinueDrawingServerRpc(hitPoint.Value);
             }
         }
         else if (Input.GetMouseButtonUp(0))
         {
             isDrawing = false;
-            EndDrawingServerRpc();  // Appel ServerRpc pour terminer le dessin
+            EndDrawingServerRpc();
         }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            ClearDrawingsServerRpc();  // Appel ServerRpc pour effacer les dessins
+            ClearDrawingsServerRpc();
         }
     }
 
     private Vector3? GetMouseHitPoint()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, drawingPlane))
         {
             return hit.point;
         }
+
+        // Si aucun plane détecté (cas du technicien), projeter sur un plan horizontal
+        Plane virtualPlane = new Plane(Vector3.up, Vector3.zero); // Plan horizontal à Y=0
+        if (virtualPlane.Raycast(ray, out float enter))
+        {
+            return ray.GetPoint(enter);
+        }
+
         return null;
     }
 
-    // ServerRpc pour démarrer le dessin (instancie et synchronise le dessin pour tous les clients)
     [ServerRpc(RequireOwnership = false)]
     private void StartDrawingServerRpc(Vector3 startPoint)
     {
         GameObject lineObj = Instantiate(lineRendererPrefab);
         NetworkObject netObj = lineObj.GetComponent<NetworkObject>();
-        netObj.Spawn();  // Spawner l'objet en réseau
-
-        ConfigureLineRendererClientRpc(netObj.NetworkObjectId, startPoint);  // Synchroniser sur les clients
+        netObj.Spawn();
+        ConfigureLineRendererClientRpc(netObj.NetworkObjectId, startPoint);
     }
 
-    // ClientRpc pour configurer le LineRenderer
     [ClientRpc]
     private void ConfigureLineRendererClientRpc(ulong networkObjectId, Vector3 startPoint)
     {
@@ -100,18 +134,15 @@ public class MessageSystem : NetworkBehaviour
         currentLine.endWidth = lineWidth;
         currentLine.material.color = drawColor;
         currentLinePositions.Clear();
-
-        AddPointToLineClientRpc(startPoint);  // Ajouter le premier point au dessin
+        AddPointToLineClientRpc(startPoint);
     }
 
-    // ServerRpc pour continuer à dessiner la ligne
     [ServerRpc(RequireOwnership = false)]
     private void ContinueDrawingServerRpc(Vector3 newPoint)
     {
-        AddPointToLineClientRpc(newPoint);  // Ajouter un point au dessin
+        AddPointToLineClientRpc(newPoint);
     }
 
-    // ClientRpc pour ajouter un point au LineRenderer
     [ClientRpc]
     private void AddPointToLineClientRpc(Vector3 point)
     {
@@ -123,14 +154,12 @@ public class MessageSystem : NetworkBehaviour
         }
     }
 
-    // ServerRpc pour terminer le dessin
     [ServerRpc(RequireOwnership = false)]
     private void EndDrawingServerRpc()
     {
-        EndDrawingClientRpc();  // Fin du dessin
+        EndDrawingClientRpc();
     }
 
-    // ClientRpc pour terminer le dessin
     [ClientRpc]
     private void EndDrawingClientRpc()
     {
@@ -138,23 +167,20 @@ public class MessageSystem : NetworkBehaviour
         currentLinePositions.Clear();
     }
 
-    // ServerRpc pour effacer les dessins
     [ServerRpc(RequireOwnership = false)]
     private void ClearDrawingsServerRpc()
     {
-        ClearDrawingsClientRpc();  // Effacer les dessins sur tous les clients
+        ClearDrawingsClientRpc();
     }
 
-    // ClientRpc pour effacer les dessins
     [ClientRpc]
     private void ClearDrawingsClientRpc()
     {
         LineRenderer[] lines = FindObjectsOfType<LineRenderer>();
         foreach (LineRenderer line in lines)
         {
-            Destroy(line.gameObject);  // Détruire les objets de dessin localement
+            Destroy(line.gameObject);
         }
-
         currentLine = null;
         currentLinePositions.Clear();
     }
