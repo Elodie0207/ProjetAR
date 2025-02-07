@@ -32,7 +32,21 @@ public class Buttonsynctest : NetworkBehaviour
 
     private void OnButtonClicked()
     {
-        Debug.Log($"Bouton cliqué! IsServer: {IsServer}");
+        Debug.Log($"Bouton cliqué ! IsServer: {IsServer}, IsOwner: {IsOwner}");
+
+        if (IsOwner)
+        {
+            if (NetworkManager.Singleton.LocalClientId == 0)
+            {
+                Debug.Log("Envoi du clic Technicien");
+                OnTechnicienClickServerRpc();
+            }
+            else if (NetworkManager.Singleton.LocalClientId == 1)
+            {
+                Debug.Log("Envoi du clic Spécialiste");
+                OnSpecialisteClickServerRpc();
+            }
+        }
 
         if (!IsServer)
         {

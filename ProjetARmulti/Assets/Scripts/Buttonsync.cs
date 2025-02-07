@@ -2,7 +2,171 @@ using UnityEngine;
 using Unity.Netcode;
 using HelloWorld;
 
-public class ARButtonSync : NetworkBehaviour
+using HelloWorld;
+using System.Collections;
+using Unity.Netcode;
+using UnityEngine;
+using Vuforia;
+
+public class ButtonSyncAR : NetworkBehaviour
+{
+    [SerializeField] private float delaiMaxEntreAppuis = 1.0f;
+    [SerializeField] private GameObject buttonPrefab;
+
+    private NetworkVariable<bool> technicienAppuye = new NetworkVariable<bool>(false);
+    private NetworkVariable<bool> specialisteAppuye = new NetworkVariable<bool>(false);
+    private NetworkVariable<float> tempsAppuiTechnicien = new NetworkVariable<float>(0f);
+    private NetworkVariable<float> tempsAppuiSpecialiste = new NetworkVariable<float>(0f);
+    private bool buttonSpawned = false;
+    private GameObject spawnedButton;
+
+    private void OnTrackingFound()
+    {
+        if (!buttonSpawned)
+        {
+            SpawnButton();
+        }
+    }
+
+    private void OnTrackingLost()
+    {
+        if (buttonSpawned && spawnedButton != null)
+        {
+            Destroy(spawnedButton);
+            buttonSpawned = false;
+        }
+    }
+
+    private void SpawnButton()
+    {
+        if (!IsServer)
+        {
+            SpawnButtonServerRpc();
+            return;
+        }
+
+        spawnedButton = Instantiate(buttonPrefab, transform.position, transform.rotation);
+        spawnedButton.GetComponent<NetworkObject>().Spawn();
+        buttonSpawned = true;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnButtonServerRpc()
+    {
+        SpawnButton();
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) // Clic gauche
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.gameObject == spawnedButton)
+                {
+                    OnButtonClicked();
+                }
+            }
+        }
+    }
+
+    private void OnButtonClicked()
+    {
+        Debug.Log($"Bouton cliqué ! IsServer: {IsServer}, IsOwner: {IsOwner}");
+
+        if (IsOwner)
+        {
+            if (NetworkManager.Singleton.LocalClientId == 0)
+            {
+                Debug.Log("Envoi du clic Technicien");
+                OnTechnicienClickServerRpc();
+            }
+            else if (NetworkManager.Singleton.LocalClientId == 1)
+            {
+                Debug.Log("Envoi du clic Spécialiste");
+                OnSpecialisteClickServerRpc();
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void OnTechnicienClickServerRpc()
+    {
+        Debug.Log("OnTechnicienClickServerRpc reçu!");
+        technicienAppuye.Value = true;
+        tempsAppuiTechnicien.Value = Time.time;
+        Debug.Log("Technicien a appuyé!");
+        VerifierSynchronisation();
+        StartCoroutine(ResetTechnicienApres(delaiMaxEntreAppuis));
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void OnSpecialisteClickServerRpc()
+    {
+        Debug.Log("OnSpecialisteClickServerRpc reçu!");
+        specialisteAppuye.Value = true;
+        tempsAppuiSpecialiste.Value = Time.time;
+        Debug.Log("Spécialiste a appuyé!");
+        VerifierSynchronisation();
+        StartCoroutine(ResetSpecialisteApres(delaiMaxEntreAppuis));
+    }
+
+    private void VerifierSynchronisation()
+    {
+        if (!IsServer) return;
+
+        if (technicienAppuye.Value && specialisteAppuye.Value)
+        {
+            float diffTemps = Mathf.Abs(tempsAppuiTechnicien.Value - tempsAppuiSpecialiste.Value);
+            if (diffTemps <= delaiMaxEntreAppuis)
+            {
+                Debug.Log("Synchronisation réussie!");
+                SynchronisationReussieClientRpc();
+            }
+            ResetBoutonsClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    private void SynchronisationReussieClientRpc()
+    {
+        Debug.Log("Les deux joueurs ont appuyé en même temps!");
+        // Ajoutez ici ce qui doit se passer quand les joueurs réussissent
+    }
+
+    [ClientRpc]
+    private void ResetBoutonsClientRpc()
+    {
+        technicienAppuye.Value = false;
+        specialisteAppuye.Value = false;
+    }
+
+    private IEnumerator ResetTechnicienApres(float delai)
+    {
+        yield return new WaitForSeconds(delai);
+        if (technicienAppuye.Value)
+        {
+            technicienAppuye.Value = false;
+            Debug.Log("Temps écoulé pour le Technicien!");
+        }
+    }
+
+    private IEnumerator ResetSpecialisteApres(float delai)
+    {
+        yield return new WaitForSeconds(delai);
+        if (specialisteAppuye.Value)
+        {
+            specialisteAppuye.Value = false;
+            Debug.Log("Temps écoulé pour le Spécialiste!");
+        }
+    }
+}
+
+
+/*public class ARButtonSync : NetworkBehaviour
 {
     [SerializeField] private GameObject buttonPrefab;
     [SerializeField] private float delaiMaxEntreAppuis = 1.0f;
@@ -222,4 +386,4 @@ public class ARButtonSync : NetworkBehaviour
             Debug.Log("Temps écoulé pour le Spécialiste!");
         }
     }
-}
+}*/
