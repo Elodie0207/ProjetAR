@@ -49,7 +49,15 @@ public class ARButtonSync : NetworkBehaviour
         }
 
         Debug.Log("Tentative d'instantiation du bouton");
-        spawnedButton = Instantiate(buttonPrefab, transform.position, transform.rotation);
+
+        // Obtenir la position et la rotation de la cible
+        Vector3 targetPosition = transform.position;
+        Quaternion targetRotation = transform.rotation;
+
+        // Ajuster la position pour centrer le bouton sur la cible
+        Vector3 buttonPosition = targetPosition + targetRotation * Vector3.forward * 0.1f;
+
+        spawnedButton = Instantiate(buttonPrefab, buttonPosition, targetRotation);
 
         if (spawnedButton != null)
         {
@@ -58,7 +66,6 @@ public class ARButtonSync : NetworkBehaviour
             {
                 netObj.Spawn();
                 spawnedButton.transform.SetParent(transform);
-                spawnedButton.transform.localPosition = Vector3.zero;
                 buttonSpawned = true;
                 Debug.Log("Bouton spawné avec succès!");
             }
@@ -73,6 +80,7 @@ public class ARButtonSync : NetworkBehaviour
             Debug.LogError("Échec de l'instantiation!");
         }
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void SpawnRequestServerRpc()
@@ -91,27 +99,52 @@ public class ARButtonSync : NetworkBehaviour
 
     private void HandleClick()
     {
-        if (!IsClient) return;
+        if (!IsClient || !buttonSpawned)
+        {
+            Debug.Log("HandleClick - Pas un client ou bouton non spawné");
+            return;
+        }
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
+        Debug.Log("Tentative de raycast...");
+
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.collider.gameObject == spawnedButton)
+            Debug.Log($"Hit détecté sur: {hit.collider.gameObject.name}");
+            // Vérifie si l'objet touché ou son parent est le bouton
+            GameObject hitObject = hit.collider.gameObject;
+            bool isButton = hitObject == spawnedButton ||
+                           (hitObject.transform.parent != null && hitObject.transform.parent.gameObject == spawnedButton);
+
+            if (isButton)
             {
+                Debug.Log("Clic sur le bouton détecté!");
                 var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-                if (playerObject == null) return;
+                if (playerObject == null)
+                {
+                    Debug.LogError("Player object non trouvé");
+                    return;
+                }
 
                 var player = playerObject.GetComponent<HelloWorldPlayer>();
-                if (player == null) return;
+                if (player == null)
+                {
+                    Debug.LogError("HelloWorldPlayer component non trouvé");
+                    return;
+                }
+
+                Debug.Log($"Rôle du joueur: {player.Role.Value}");
 
                 if (player.Role.Value == PlayerRole.Technicien)
                 {
+                    Debug.Log("Envoi du clic Technicien");
                     OnTechnicienClickServerRpc();
                 }
                 else if (player.Role.Value == PlayerRole.Specialiste)
                 {
+                    Debug.Log("Envoi du clic Spécialiste");
                     OnSpecialisteClickServerRpc();
                 }
             }
@@ -121,6 +154,7 @@ public class ARButtonSync : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void OnTechnicienClickServerRpc()
     {
+        Debug.Log("OnTechnicienClickServerRpc reçu!");
         technicienAppuye.Value = true;
         tempsAppuiTechnicien.Value = Time.time;
         Debug.Log("Technicien a appuyé!");
@@ -131,6 +165,7 @@ public class ARButtonSync : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void OnSpecialisteClickServerRpc()
     {
+        Debug.Log("OnSpecialisteClickServerRpc reçu!");
         specialisteAppuye.Value = true;
         tempsAppuiSpecialiste.Value = Time.time;
         Debug.Log("Spécialiste a appuyé!");
