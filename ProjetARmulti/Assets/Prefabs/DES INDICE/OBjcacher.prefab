@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 8000
+      value: 151.064
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 8000
+      value: 151.064
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 8000
+      value: 151.064
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -75,6 +75,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5143672293954725511}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 64131887112022358}
   m_SourcePrefab: {fileID: 100100000, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
 --- !u!1 &1898939308780662647 stripped
 GameObject:
@@ -93,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3487617706
+  GlobalObjectIdHash: 3784992499
   InScenePlacedSourceGlobalObjectIdHash: 3487617706
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -102,3 +105,25 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!64 &64131887112022358
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898939308780662647}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 289301614986012343, guid: 04c1a8932e96d2645aa6edbe52db58f9, type: 3}
