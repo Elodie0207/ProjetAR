@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d68db7e7-4263-4a7c-992d-092124b30bd1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjetARmulti/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/SteamAudio/Resources/SteamAudioSettings.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/SteamAudio/Resources/SteamAudioSettings.asset.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/sceneGame2/Enigme Puzzle.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/sceneGame2/Enigme Puzzle.prefab.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/TST.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TST.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Examples &amp; Extras/Resources/Fonts &amp; Materials/Roboto-Bold SDF.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -20,6 +23,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/NeedleVisibility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/RadioFrequencyControl.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Script Enigme/SignauxLumineux.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/ScriptLivre.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.netcode.gameobjects@1.9.1/Editor/NetworkBehaviourEditor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.netcode.gameobjects@1.9.1/Runtime/Logging/NetworkLog.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -116,6 +120,7 @@
       <workItem from="1738872682578" duration="1000" />
       <workItem from="1738873071462" duration="290000" />
       <workItem from="1738873455957" duration="14308000" />
+      <workItem from="1738948745131" duration="1803000" />
     </task>
     <servers />
   </component>
