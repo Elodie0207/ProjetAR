@@ -1,9 +1,7 @@
-using Unity.Netcode;
 using UnityEngine;
 
-public class BookAnimationController : NetworkBehaviour
+public class BookAnimationController : MonoBehaviour
 {
-    // Structure simple pour lier un objet 3D à son animation
     [System.Serializable]
     public class PageSetup
     {
@@ -12,56 +10,85 @@ public class BookAnimationController : NetworkBehaviour
     }
 
     [SerializeField] private PageSetup[] pages;
-    private NetworkVariable<int> currentIndex = new NetworkVariable<int>(0);
+    private int currentIndex = 0;
 
     private void Start()
     {
+        // Configuration initiale des animations
         foreach (var page in pages)
         {
-            if (page.pageObject != null)
+            if (page.pageObject != null && page.animationClip != null)
             {
                 var anim = page.pageObject.GetComponent<Animation>();
                 if (anim == null)
-                    anim = page.pageObject.AddComponent<Animation>();
-
-                if (page.animationClip != null)
                 {
-                    page.animationClip.legacy = true;
-                    anim.AddClip(page.animationClip, page.animationClip.name);
+                    anim = page.pageObject.AddComponent<Animation>();
+                    Debug.Log($"Added Animation component to {page.pageObject.name}");
                 }
+
+                // Forcer le mode Legacy
+                page.animationClip.legacy = true;
+
+                // Retirer et rajouter l'animation pour être sûr
+                if (anim.GetClip(page.animationClip.name))
+                {
+                    anim.RemoveClip(page.animationClip.name);
+                }
+                anim.AddClip(page.animationClip, page.animationClip.name);
+
+                // Configurer l'animation pour qu'elle joue correctement
+                anim.playAutomatically = false;
+                anim.wrapMode = WrapMode.Once;
+
+                Debug.Log($"Configured animation {page.animationClip.name} for {page.pageObject.name}");
             }
         }
     }
 
     private void Update()
     {
-        if (IsOwner && Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            PlayNextAnimationServerRpc();
+            PlayNextAnimation();
         }
     }
 
-    [ServerRpc]
-    private void PlayNextAnimationServerRpc()
+    private void PlayNextAnimation()
     {
-        if (currentIndex.Value >= pages.Length)
-            currentIndex.Value = 0;
-
-        PlayAnimationClientRpc(currentIndex.Value);
-        currentIndex.Value++;
-    }
-
-    [ClientRpc]
-    private void PlayAnimationClientRpc(int index)
-    {
-        if (index < pages.Length && pages[index].pageObject != null)
+        if (currentIndex >= pages.Length)
         {
-            var anim = pages[index].pageObject.GetComponent<Animation>();
-            if (anim != null && pages[index].animationClip != null)
+            currentIndex = 0;
+        }
+
+        if (currentIndex < pages.Length && pages[currentIndex].pageObject != null)
+        {
+            var page = pages[currentIndex];
+            var anim = page.pageObject.GetComponent<Animation>();
+
+            if (anim != null && page.animationClip != null)
             {
-                anim.Play(pages[index].animationClip.name);
-                Debug.Log($"Playing animation: {pages[index].animationClip.name}");
+                // Forcer l'arrêt de toute animation en cours
+                anim.Stop();
+
+                // Jouer la nouvelle animation
+                anim[page.animationClip.name].wrapMode = WrapMode.Once;
+                anim[page.animationClip.name].speed = 1;
+                anim.Play(page.animationClip.name);
+
+                Debug.Log($"Playing animation: {page.animationClip.name} on {page.pageObject.name}");
+
+                // Vérifier si l'animation joue réellement
+                if (anim.isPlaying)
+                {
+                    Debug.Log($"Animation is successfully playing on {page.pageObject.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Failed to play animation on {page.pageObject.name}");
+                }
             }
         }
+
+        currentIndex++;
     }
 }

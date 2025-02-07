@@ -912,6 +912,7 @@ GameObject:
   - component: {fileID: 7343627046186783396}
   - component: {fileID: 7140054529860468375}
   - component: {fileID: 4786535348105147730}
+  - component: {fileID: 7276606461708265236}
   m_Layer: 0
   m_Name: bookV5
   m_TagString: Untagged
@@ -960,7 +961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3841168492
+  GlobalObjectIdHash: 3832636184
   InScenePlacedSourceGlobalObjectIdHash: 1345986010
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -1004,6 +1005,27 @@ MonoBehaviour:
     animationClip: {fileID: 105453647811200979, guid: 97808c0dd92397b4a9f852bd61f18853, type: 3}
   - pageObject: {fileID: 88589590495740749}
     animationClip: {fileID: -3644732191780812412, guid: 97808c0dd92397b4a9f852bd61f18853, type: 3}
+--- !u!95 &7276606461708265236
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5938950285759379209}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bf194ed35a3f0584188b413cc45e5567, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6630793138274171960
 GameObject:
   m_ObjectHideFlags: 0
