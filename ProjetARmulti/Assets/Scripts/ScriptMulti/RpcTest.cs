@@ -14,7 +14,7 @@ public class RpcTest : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     void ClientAndHostRpc(int value, ulong sourceNetworkObjectId)
     {
-        Debug.Log($"Client Received the RPC #{value} on NetworkObject #{sourceNetworkObjectId}");
+        //Debug.Log($"Client Received the RPC #{value} on NetworkObject #{sourceNetworkObjectId}");
         if (IsOwner) //Only send an RPC to the owner of the NetworkObject
         {
             ServerOnlyRpc(value + 1, sourceNetworkObjectId);
@@ -24,7 +24,7 @@ public class RpcTest : NetworkBehaviour
     [Rpc(SendTo.Server)]
     void ServerOnlyRpc(int value, ulong sourceNetworkObjectId)
     {
-        Debug.Log($"Server Received the RPC #{value} on NetworkObject #{sourceNetworkObjectId}");
+        //Debug.Log($"Server Received the RPC #{value} on NetworkObject #{sourceNetworkObjectId}");
         ClientAndHostRpc(value, sourceNetworkObjectId);
     }
 }
